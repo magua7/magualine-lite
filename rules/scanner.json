@@ -1,0 +1,178 @@
+{
+  "enabled": true,
+  "description": "扫描器指纹、敏感路径与 Java/PHP 生态探测规则，按场景拆分为独立条目。",
+  "rules": [
+    {
+      "rule_id": "scanner_probe_recon_suite",
+      "title": "Recon tool fingerprint",
+      "layer": "behavior",
+      "category": "scanner",
+      "severity": "medium",
+      "score": 62,
+      "targets": ["user_agent", "headers", "query", "path"],
+      "pattern": "(?:ffuf|naabu|amass|subfinder|gospider|hakrawler|katana|dalfox|assetfinder|waybackurls)",
+      "tags": ["scanner", "fingerprint", "recon"],
+      "description": "Detects recon and asset discovery tools frequently seen in internet-wide probing.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "scanner_probe_oast_marker",
+      "title": "Out of band testing marker",
+      "layer": "behavior",
+      "category": "scanner",
+      "severity": "medium",
+      "score": 64,
+      "targets": ["query", "body", "headers", "user_agent"],
+      "pattern": "(?:interactsh|burpcollaborator|dnslog|ceye\\.io|requestbin|xsshunter)",
+      "tags": ["scanner", "oast", "marker"],
+      "description": "Detects OAST domains and markers commonly embedded in active testing payloads.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "scanner_probe_fuzz_placeholder",
+      "title": "Fuzzing placeholder marker",
+      "layer": "behavior",
+      "category": "scanner",
+      "severity": "medium",
+      "score": 60,
+      "targets": ["path", "query", "body", "headers"],
+      "pattern": "(?:\\bFUZZ\\b|%EXT%|\\{\\{(?:randstr|interactsh-url|BaseURL|Hostname)\\}\\}|__FUZZ_[A-Z0-9_]{1,24}__)",
+      "tags": ["scanner", "fuzzing", "template"],
+      "description": "Detects common placeholder tokens accidentally or intentionally left in fuzzing traffic.",
+      "block_on_match": true
+    },
+
+    {
+      "rule_id": "sensitive_probe_repository_metadata",
+      "title": "Repository and metadata exposure probe",
+      "layer": "behavior",
+      "category": "sensitive_path",
+      "severity": "medium",
+      "score": 61,
+      "targets": ["path"],
+      "pattern": "(?:/\\.svn/(?:entries|wc\\.db)|/\\.hg(?:/|$)|/\\.bzr(?:/|$)|/CVS/Entries(?:$|\\?)|/\\.DS_Store(?:$|\\?))",
+      "tags": ["probe", "repository", "metadata"],
+      "description": "Detects requests for repository metadata and desktop artifact files that should never be exposed.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "sensitive_probe_admin_interfaces",
+      "title": "Administrative interface probe",
+      "layer": "behavior",
+      "category": "sensitive_path",
+      "severity": "medium",
+      "score": 64,
+      "targets": ["path"],
+      "pattern": "(?:/(?:jmx-console|web-console)(?:/|$)|/console/login/LoginForm\\.jsp(?:$|\\?)|/server-status(?:$|\\?)|/server-info(?:$|\\?))",
+      "tags": ["probe", "admin", "console"],
+      "description": "Detects direct probes against middleware consoles and classic server status pages.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "sensitive_probe_config_leak",
+      "title": "Configuration and descriptor leak probe",
+      "layer": "behavior",
+      "category": "sensitive_path",
+      "severity": "medium",
+      "score": 66,
+      "targets": ["path"],
+      "pattern": "(?:/WEB-INF/web\\.xml(?:$|\\?)|/WEB-INF/classes(?:/|$)|/(?:application|bootstrap)\\.(?:yml|yaml|properties)(?:$|\\?)|/composer\\.(?:json|lock)(?:$|\\?)|/(?:package-lock\\.json|yarn\\.lock)(?:$|\\?))",
+      "tags": ["probe", "config", "descriptor"],
+      "description": "Detects requests for deployment descriptors, framework configs and dependency manifests.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "sensitive_probe_debug_surface",
+      "title": "Debug and management surface probe",
+      "layer": "behavior",
+      "category": "sensitive_path",
+      "severity": "medium",
+      "score": 65,
+      "targets": ["path"],
+      "pattern": "(?:/actuator/(?:env|heapdump|threaddump|jolokia|logfile)(?:$|\\?)|/h2-console(?:/|$)|/api/jsonws(?:/|$)|/debug/default/view(?:$|\\?))",
+      "tags": ["probe", "debug", "management"],
+      "description": "Detects exposed debug and management endpoints commonly probed before exploitation.",
+      "block_on_match": true
+    },
+
+    {
+      "rule_id": "java_probe_actuator_surface",
+      "title": "Spring actuator surface probe",
+      "layer": "behavior",
+      "category": "java_probe",
+      "severity": "medium",
+      "score": 66,
+      "targets": ["path"],
+      "pattern": "(?:/actuator/(?:conditions|beans|configprops|scheduledtasks|loggers|mappings|gateway/routes|shutdown)(?:$|\\?)|/jolokia/list(?:$|\\?))",
+      "tags": ["java", "spring", "actuator"],
+      "description": "Detects probes against higher-value Spring actuator and Jolokia endpoints.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "java_probe_middleware_surface",
+      "title": "Java middleware console probe",
+      "layer": "behavior",
+      "category": "java_probe",
+      "severity": "medium",
+      "score": 67,
+      "targets": ["path"],
+      "pattern": "(?:/invoker/JMXInvokerServlet(?:$|\\?)|/web-console(?:/|$)|/uddiexplorer(?:/|$)|/ws_utc(?:/|$)|/console/login/LoginForm\\.jsp(?:$|\\?)|/bea_wls_internal(?:/|$))",
+      "tags": ["java", "middleware", "console"],
+      "description": "Detects Java middleware admin and integration endpoints often checked during exploitation prep.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "java_probe_archive_descriptor",
+      "title": "Java archive or descriptor probe",
+      "layer": "behavior",
+      "category": "java_probe",
+      "severity": "medium",
+      "score": 64,
+      "targets": ["path"],
+      "pattern": "(?:/WEB-INF/(?:web\\.xml|classes)(?:/|$)|/META-INF/(?:MANIFEST\\.MF|maven/)(?:/|$)|/(?:application|bootstrap)\\.(?:yml|yaml|properties)(?:$|\\?))",
+      "tags": ["java", "descriptor", "archive"],
+      "description": "Detects attempts to read Java archive metadata, deployment descriptors and framework config files.",
+      "block_on_match": true
+    },
+
+    {
+      "rule_id": "php_probe_debug_surface",
+      "title": "PHP debug endpoint probe",
+      "layer": "behavior",
+      "category": "php_probe",
+      "severity": "medium",
+      "score": 65,
+      "targets": ["path"],
+      "pattern": "(?:/_ignition(?:/|$)|/debug/default/view(?:$|\\?)|/app_dev\\.php(?:$|\\?)|/app\\.php/_profiler(?:/|$)|/phpinfo(?:\\.php)?(?:$|\\?))",
+      "tags": ["php", "debug", "framework"],
+      "description": "Detects probes against PHP framework debug pages and exposed phpinfo screens.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "php_probe_dependency_surface",
+      "title": "PHP dependency artifact probe",
+      "layer": "behavior",
+      "category": "php_probe",
+      "severity": "medium",
+      "score": 66,
+      "targets": ["path"],
+      "pattern": "(?:/vendor(?:/|$)|/core/vendor/phpunit(?:/|$)|/composer\\.(?:json|lock)(?:$|\\?)|/vendor/composer/installed\\.json(?:$|\\?))",
+      "tags": ["php", "dependency", "artifact"],
+      "description": "Detects direct access to PHP dependency trees and composer metadata.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "php_probe_storage_surface",
+      "title": "PHP storage and log exposure probe",
+      "layer": "behavior",
+      "category": "php_probe",
+      "severity": "medium",
+      "score": 64,
+      "targets": ["path"],
+      "pattern": "(?:/storage/(?:logs|framework)(?:/|$)|/var/log/dev\\.log(?:$|\\?)|/wp-content/debug\\.log(?:$|\\?)|/\\.env\\.(?:bak|backup|old)(?:$|\\?))",
+      "tags": ["php", "storage", "log"],
+      "description": "Detects probes for PHP application logs, framework storage paths and common backup env files.",
+      "block_on_match": true
+    }
+  ]
+}

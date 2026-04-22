@@ -1,0 +1,20 @@
+{
+  "enabled": false,
+  "description": "示例文件：.example.json 默认不会被自动加载。当前轻量规则系统支持 enabled 和 block_on_match，但不实现复杂负向排除语法。",
+  "rules": [
+    {
+      "enabled": false,
+      "rule_id": "example_customer_probe",
+      "title": "Example disabled customer probe rule",
+      "layer": "behavior",
+      "category": "example",
+      "severity": "low",
+      "score": 10,
+      "targets": ["path"],
+      "pattern": "/internal/healthcheck",
+      "tags": ["example"],
+      "description": "复制这个文件后可通过 enabled=false 暂时停用某条规则，或通过 block_on_match=false 降级为仅命中不拦截。",
+      "block_on_match": false
+    }
+  ]
+}

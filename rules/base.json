@@ -1,0 +1,168 @@
+{
+  "enabled": true,
+  "description": "通用注入与文件包含类规则，按攻击类别拆分为更细粒度的可维护条目。",
+  "rules": [
+    {
+      "rule_id": "xxe_dtd_subset_decl",
+      "title": "XML DOCTYPE internal subset declaration",
+      "layer": "protocol",
+      "category": "xxe",
+      "severity": "high",
+      "score": 76,
+      "targets": ["body"],
+      "flags": ["IGNORECASE", "MULTILINE"],
+      "pattern": "<!DOCTYPE\\s+[a-z0-9:_-]{1,48}\\s*\\[",
+      "tags": ["xml", "xxe", "doctype"],
+      "description": "Detects XML DOCTYPE declarations with internal subsets, which are more suspicious than ordinary HTML doctypes.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "xxe_entity_declaration",
+      "title": "XML entity declaration payload",
+      "layer": "protocol",
+      "category": "xxe",
+      "severity": "high",
+      "score": 79,
+      "targets": ["body"],
+      "flags": ["IGNORECASE", "MULTILINE"],
+      "pattern": "<!ENTITY\\s+(?:%\\s*)?[a-z0-9._:-]{1,40}\\s+(?:SYSTEM|PUBLIC|['\"])",
+      "tags": ["xml", "xxe", "entity"],
+      "description": "Detects custom XML entity declarations commonly used to prepare XXE payloads.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "xxe_external_entity_uri",
+      "title": "External entity URI resolver payload",
+      "layer": "protocol",
+      "category": "xxe",
+      "severity": "high",
+      "score": 81,
+      "targets": ["body", "query"],
+      "flags": ["IGNORECASE", "MULTILINE"],
+      "pattern": "(?:SYSTEM\\s+['\"](?:file|http|https|ftp|gopher|jar)://|PUBLIC\\s+['\"][^'\"]{1,80}['\"]\\s+['\"](?:file|http|https|ftp|gopher|jar)://)",
+      "tags": ["xml", "xxe", "external-entity"],
+      "description": "Detects external entity resolvers referencing local files or remote resources.",
+      "block_on_match": true
+    },
+
+    {
+      "rule_id": "nosql_operator_payload",
+      "title": "Mongo style operator payload",
+      "layer": "application",
+      "category": "nosql",
+      "severity": "high",
+      "score": 72,
+      "targets": ["query", "body"],
+      "pattern": "(?:^|[\\[{,&?])\\s*[\"']?\\$(?:ne|gt|gte|lt|lte|in|nin|or|and|exists)\\b[\"']?\\s*[:=]",
+      "tags": ["nosql", "mongo", "operator"],
+      "description": "Detects common Mongo-style comparison and boolean operators embedded in request data.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "nosql_regex_payload",
+      "title": "Mongo regex injection payload",
+      "layer": "application",
+      "category": "nosql",
+      "severity": "high",
+      "score": 74,
+      "targets": ["query", "body"],
+      "pattern": "[\"']?\\$regex[\"']?\\s*:\\s*(?:/[^/\\n]{1,80}/[a-z]{0,4}|[\"'][^\"']{0,80}(?:\\.\\*|\\(\\?:\\.\\)\\*)[^\"']*[\"'])",
+      "tags": ["nosql", "mongo", "regex"],
+      "description": "Detects Mongo regex operators used for wildcard bypass and credential discovery.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "nosql_where_javascript",
+      "title": "Mongo $where javascript payload",
+      "layer": "application",
+      "category": "nosql",
+      "severity": "high",
+      "score": 78,
+      "targets": ["query", "body"],
+      "pattern": "[\"']?\\$where[\"']?\\s*:\\s*(?:[\"']?\\s*(?:function\\s*\\(|this\\.[a-z0-9_]+|sleep\\s*\\(|1\\s*==\\s*1))",
+      "tags": ["nosql", "mongo", "javascript"],
+      "description": "Detects $where javascript execution snippets often used in Mongo injection attacks.",
+      "block_on_match": true
+    },
+
+    {
+      "rule_id": "ldap_wildcard_auth_bypass",
+      "title": "LDAP wildcard authentication bypass payload",
+      "layer": "application",
+      "category": "ldap",
+      "severity": "high",
+      "score": 69,
+      "targets": ["query", "body"],
+      "pattern": "\\*\\)\\((?:uid|cn|mail|samaccountname|userpassword)=\\*",
+      "tags": ["ldap", "filter", "wildcard"],
+      "description": "Detects wildcard LDAP filter injections that broaden user or password matches.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "ldap_boolean_injection",
+      "title": "LDAP boolean filter injection sequence",
+      "layer": "application",
+      "category": "ldap",
+      "severity": "high",
+      "score": 71,
+      "targets": ["query", "body"],
+      "pattern": "(?:\\)\\s*\\(\\|\\s*\\(|\\)\\s*\\(&\\s*\\(|\\)\\s*!\\s*\\()",
+      "tags": ["ldap", "boolean", "filter"],
+      "description": "Detects boolean branch operators inserted into LDAP filters for bypass or enumeration.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "ldap_objectclass_enumeration",
+      "title": "LDAP objectClass enumeration payload",
+      "layer": "application",
+      "category": "ldap",
+      "severity": "medium",
+      "score": 67,
+      "targets": ["query", "body"],
+      "pattern": "(?:\\(&\\s*\\(objectclass=\\*\\)|\\(\\|\\s*\\(objectclass=\\*\\)|\\(\\|\\s*\\((?:uid|cn|mail)=\\*\\))",
+      "tags": ["ldap", "enumeration", "objectclass"],
+      "description": "Detects LDAP filter fragments aimed at enumerating object classes or broad account sets.",
+      "block_on_match": true
+    },
+
+    {
+      "rule_id": "file_inclusion_stream_wrapper",
+      "title": "Local file inclusion stream wrapper payload",
+      "layer": "application",
+      "category": "file_inclusion",
+      "severity": "high",
+      "score": 78,
+      "targets": ["path", "query", "body"],
+      "pattern": "(?:php://(?:input|filter|stdin|fd)|data://(?:text/plain|text/html)|expect://|phar://|zip://)",
+      "tags": ["lfi", "rfi", "wrapper"],
+      "description": "Detects PHP stream wrappers frequently abused for local/remote file inclusion and RCE chains.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "file_inclusion_remote_url_param",
+      "title": "Remote file include parameter payload",
+      "layer": "application",
+      "category": "file_inclusion",
+      "severity": "high",
+      "score": 73,
+      "targets": ["query", "body"],
+      "pattern": "\\b(?:file|page|path|template|include|inc|load|document|folder|root|style)\\s*=\\s*(?:https?|ftp|smb|nfs)://",
+      "tags": ["rfi", "parameter", "remote"],
+      "description": "Detects include-like parameters pointing to remote URLs instead of expected local templates or files.",
+      "block_on_match": true
+    },
+    {
+      "rule_id": "file_inclusion_local_target",
+      "title": "Local file disclosure target payload",
+      "layer": "content",
+      "category": "file_inclusion",
+      "severity": "high",
+      "score": 75,
+      "targets": ["path", "query", "body"],
+      "pattern": "(?:(?:\\.\\./){1,8}(?:etc/passwd|proc/self/environ|windows/win\\.ini|boot\\.ini|WEB-INF/web\\.xml)|/(?:etc/passwd|proc/self/environ|windows/win\\.ini|WEB-INF/web\\.xml)\\b)",
+      "tags": ["lfi", "traversal", "disclosure"],
+      "description": "Detects attempts to include or disclose classic sensitive local files.",
+      "block_on_match": true
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ app_name }} - 登录</title>
+    <link rel="stylesheet" href="../static/styles.css" />
+  </head>
+  <body class="auth-page">
+    <div class="background" aria-hidden="true">
+      <div class="shape"></div>
+      <div class="shape"></div>
+    </div>
+    <main class="auth-shell">
+      <section class="auth-hero">
+        <div class="auth-hero-orbit auth-hero-orbit-a"></div>
+        <div class="auth-hero-orbit auth-hero-orbit-b"></div>
+        <img
+          src="{{ url_for('static', path='/logo/logo.png') }}"
+          alt="{{ app_name }} logo"
+          class="auth-floating-logo"
+        />
+
+        <span class="eyebrow threat-monitoring-highlight">MAGUALINE</span>
+        <h1 class="threat-monitoring-highlight">智御Go <span class="small-title">  威胁流量防护台</span></h1>
+        <p class="auth-description">
+          聚焦入口流量、攻击拦截、日志留痕与人工处置，保留安全运营闭环，让风险态势与处置动作都能被快速看清。
+        </p>
+
+        <div class="auth-status-strip">
+          <div class="auth-status-chip auth-status-chip-1">
+            <span>防护模式</span>
+            <strong>入口代理</strong>
+          </div>
+          <div class="auth-status-chip auth-status-chip-2">
+            <span>监测视角</span>
+            <strong>24h / 实时</strong>
+          </div>
+          <div class="auth-status-chip auth-status-chip-3">
+            <span>研判重点</span>
+            <strong>流量与告警</strong>
+          </div>
+        </div>
+
+        <div class="hero-map-card">
+          <div class="hero-map">
+            <div class="hero-map-grid"></div>
+            <div class="hero-map-radar"></div>
+            <div class="hero-map-scan"></div>
+            <div class="hero-map-ring ring-1"></div>
+            <div class="hero-map-ring ring-2"></div>
+            <div class="hero-map-ring ring-3"></div>
+            <div class="hero-map-ring ring-4"></div>
+            <div class="hero-flash flash-1"></div>
+            <div class="hero-flash flash-2"></div>
+            <div class="hero-flash flash-3"></div>
+            <div class="hero-flash flash-4"></div>
+            <div class="hero-flash flash-5"></div>
+            <div class="hero-beacon hero-beacon-a"></div>
+            <div class="hero-beacon hero-beacon-b"></div>
+            <div class="hero-beacon-red hero-beacon-red-1"></div>
+            <div class="hero-beacon-red hero-beacon-red-2"></div>
+            <div class="hero-beacon-red hero-beacon-red-3"></div>
+          </div>
+          <div class="hero-map-footer">
+            <div>
+              <span class="map-kicker">态势感知视图</span>
+              <strong class="threat-monitoring-highlight">威胁态势监测</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="auth-card">
+        <div class="card-header">
+          <span class="badge">管理员</span>
+          <h2>登录控制台</h2>
+          <p>请输入您的账号密码以访问管理后台</p>
+        </div>
+
+        <form id="login-form" class="stack">
+          <label class="field">
+            <span>用户名</span>
+            <input
+              name="username"
+              type="text"
+              autocomplete="username"
+              placeholder="请输入用户名"
+              required
+            />
+          </label>
+
+          <label class="field">
+            <span>密码</span>
+            <input
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="请输入密码"
+              required
+            />
+          </label>
+
+          <button class="primary-button" type="submit">进入后台</button>
+          <p id="login-error" class="form-error" hidden></p>
+        </form>
+
+        <div class="auth-footer">
+          <p class="auth-footer-line">© 2026 MAGUALINE 威胁流量防护台</p>
+          <p class="auth-footer-line">版本 1.0.0</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', path='/app.js') }}?v=20260409ui7" defer></script>
+  </body>
+</html>
