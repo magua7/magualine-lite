@@ -179,17 +179,18 @@ class LogStateConsistencyTest(unittest.TestCase):
             for flow in raw_flows
         }
 
-        self.assertEqual(len(raw_flows), 50)
-        self.assertEqual(len({flow["source_ip"] for flow in raw_flows}), 50)
-        self.assertGreaterEqual(len(coordinates), 45)
+        self.assertEqual(len(raw_flows), 20)
+        self.assertEqual(len({flow["source_ip"] for flow in raw_flows}), 20)
+        self.assertGreaterEqual(len(coordinates), 18)
         self.assertTrue(all(flow["geo_resolved"] is False for flow in raw_flows))
         self.assertTrue(all(flow["display_coord_source"] == "pseudo_ip_hash" for flow in raw_flows))
-        self.assertGreaterEqual(len({flow["pseudo_tile"] for flow in raw_flows}), 45)
+        self.assertGreaterEqual(len({flow["pseudo_tile"] for flow in raw_flows}), 18)
         self.assertGreater(max(float(flow["source_lng"]) for flow in raw_flows) - min(float(flow["source_lng"]) for flow in raw_flows), 120)
         self.assertGreater(len(screen["representative_flows"]), 1)
         self.assertEqual(screen["debug"]["attack_rows_after_filter"], 50)
-        self.assertEqual(screen["debug"]["raw_flows_after_dedup"], 50)
-        self.assertEqual(screen["debug"]["geo_placeholder_raw_flow_count"], 50)
+        self.assertEqual(screen["debug"]["raw_flows_after_dedup"], 20)
+        self.assertEqual(screen["debug"]["geo_placeholder_raw_flow_count"], 20)
+        self.assertEqual(screen["debug"]["dropped_by_profile_limit_count"], 30)
 
     def test_screen_zero_data_returns_no_flows(self) -> None:
         screen = storage.get_screen_snapshot(hours=24)
@@ -201,9 +202,9 @@ class LogStateConsistencyTest(unittest.TestCase):
 
     def test_screen_uses_cached_real_geo_for_flow_coordinates(self) -> None:
         geo_rows = [
-            ("8.8.8.8", {"label": "United States / California", "country": "美国", "region": "California", "city": "", "source": "remote"}),
-            ("1.1.1.1", {"label": "Australia / Queensland", "country": "澳大利亚", "region": "Queensland", "city": "", "source": "remote"}),
-            ("9.9.9.9", {"label": "Germany / Berlin", "country": "德国", "region": "Berlin", "city": "", "source": "remote"}),
+            ("8.8.8.8", {"label": "United States / California", "country": "美国", "region": "California", "city": "", "lat": 37.2, "lon": -121.9, "source": "remote"}),
+            ("1.1.1.1", {"label": "Australia / Queensland", "country": "澳大利亚", "region": "Queensland", "city": "", "lat": -27.4, "lon": 153.0, "source": "remote"}),
+            ("9.9.9.9", {"label": "Germany / Berlin", "country": "德国", "region": "Berlin", "city": "", "lat": 52.5, "lon": 13.4, "source": "remote"}),
         ]
         for ip, geo in geo_rows:
             storage.cache_ip_geo(ip, geo)
@@ -223,8 +224,41 @@ class LogStateConsistencyTest(unittest.TestCase):
 
         self.assertEqual(len(raw_flows), 3)
         self.assertTrue(all(flow["geo_resolved"] is True for flow in raw_flows))
-        self.assertEqual({flow["display_coord_source"] for flow in raw_flows}, {"remote"})
+        self.assertEqual({flow["display_coord_source"] for flow in raw_flows}, {"provider_lat_lon"})
+        self.assertEqual({flow["geo_precision"] for flow in raw_flows}, {"exact"})
         self.assertEqual(len({(round(float(flow["source_lng"]), 1), round(float(flow["source_lat"]), 1)) for flow in raw_flows}), 3)
+
+    def test_screen_us_region_centroids_do_not_collapse_to_country_point(self) -> None:
+        geo_rows = [
+            ("8.8.8.8", {"label": "United States / California", "country": "US", "region": "California", "city": "", "source": "remote"}),
+            ("8.8.4.4", {"label": "United States / Texas", "country": "US", "region": "Texas", "city": "", "source": "remote"}),
+            ("9.9.9.9", {"label": "United States / New York", "country": "US", "region": "New York", "city": "", "source": "remote"}),
+        ]
+        for ip, geo in geo_rows:
+            storage.cache_ip_geo(ip, geo)
+            self._add_log(
+                path=f"/attack/{ip}",
+                client_ip=ip,
+                action="blocked",
+                attack_type="scanner_probe",
+                rule_category="scanner",
+                severity_hint="high",
+                status_code=403,
+                upstream_status=None,
+            )
+
+        screen = storage.get_screen_snapshot(hours=24)
+        raw_flows = screen["raw_flows"]
+        coords = {(round(float(flow["source_lng"]), 2), round(float(flow["source_lat"]), 2)) for flow in raw_flows}
+
+        self.assertEqual(len(raw_flows), 3)
+        self.assertEqual(len(coords), 3)
+        self.assertEqual({flow["display_country"] for flow in raw_flows}, {"美国"})
+        self.assertEqual({flow["geo_precision"] for flow in raw_flows}, {"region_centroid"})
+        self.assertEqual(
+            {flow["display_label"] for flow in raw_flows},
+            {"美国 · 加利福尼亚", "美国 · 得克萨斯", "美国 · 纽约"},
+        )
 
     def test_screen_china_source_display_label_keeps_province(self) -> None:
         storage.cache_ip_geo(
