@@ -214,6 +214,168 @@ CHINA_PROVINCE_ALIASES = {
     "澳门特别行政区": "澳门",
 }
 
+US_STATE_COORDINATES = {
+    "Alabama": {"lng": -86.9023, "lat": 32.3182},
+    "Alaska": {"lng": -152.4044, "lat": 61.3707},
+    "Arizona": {"lng": -111.0937, "lat": 34.0489},
+    "Arkansas": {"lng": -92.3731, "lat": 34.9697},
+    "California": {"lng": -119.4179, "lat": 36.7783},
+    "Colorado": {"lng": -105.7821, "lat": 39.5501},
+    "Connecticut": {"lng": -72.7554, "lat": 41.6032},
+    "Delaware": {"lng": -75.5277, "lat": 38.9108},
+    "District of Columbia": {"lng": -77.0369, "lat": 38.9072},
+    "Florida": {"lng": -81.5158, "lat": 27.6648},
+    "Georgia": {"lng": -82.9001, "lat": 32.1656},
+    "Hawaii": {"lng": -155.5828, "lat": 19.8968},
+    "Idaho": {"lng": -114.7420, "lat": 44.0682},
+    "Illinois": {"lng": -89.3985, "lat": 40.6331},
+    "Indiana": {"lng": -86.1349, "lat": 40.2672},
+    "Iowa": {"lng": -93.0977, "lat": 41.8780},
+    "Kansas": {"lng": -98.4842, "lat": 39.0119},
+    "Kentucky": {"lng": -84.2700, "lat": 37.8393},
+    "Louisiana": {"lng": -91.9623, "lat": 30.9843},
+    "Maine": {"lng": -69.4455, "lat": 45.2538},
+    "Maryland": {"lng": -76.6413, "lat": 39.0458},
+    "Massachusetts": {"lng": -71.3824, "lat": 42.4072},
+    "Michigan": {"lng": -85.6024, "lat": 44.3148},
+    "Minnesota": {"lng": -94.6859, "lat": 46.7296},
+    "Mississippi": {"lng": -89.3985, "lat": 32.3547},
+    "Missouri": {"lng": -91.8318, "lat": 37.9643},
+    "Montana": {"lng": -110.3626, "lat": 46.8797},
+    "Nebraska": {"lng": -99.9018, "lat": 41.4925},
+    "Nevada": {"lng": -116.4194, "lat": 38.8026},
+    "New Hampshire": {"lng": -71.5724, "lat": 43.1939},
+    "New Jersey": {"lng": -74.4057, "lat": 40.0583},
+    "New Mexico": {"lng": -105.8701, "lat": 34.5199},
+    "New York": {"lng": -75.0000, "lat": 43.0000},
+    "North Carolina": {"lng": -79.0193, "lat": 35.7596},
+    "North Dakota": {"lng": -101.0020, "lat": 47.5515},
+    "Ohio": {"lng": -82.9071, "lat": 40.4173},
+    "Oklahoma": {"lng": -97.0929, "lat": 35.0078},
+    "Oregon": {"lng": -120.5542, "lat": 43.8041},
+    "Pennsylvania": {"lng": -77.1945, "lat": 41.2033},
+    "Rhode Island": {"lng": -71.4774, "lat": 41.5801},
+    "South Carolina": {"lng": -81.1637, "lat": 33.8361},
+    "South Dakota": {"lng": -99.9018, "lat": 43.9695},
+    "Tennessee": {"lng": -86.5804, "lat": 35.5175},
+    "Texas": {"lng": -99.9018, "lat": 31.9686},
+    "Utah": {"lng": -111.0937, "lat": 39.3210},
+    "Vermont": {"lng": -72.5778, "lat": 44.5588},
+    "Virginia": {"lng": -78.6569, "lat": 37.4316},
+    "Washington": {"lng": -120.7401, "lat": 47.7511},
+    "West Virginia": {"lng": -80.4549, "lat": 38.5976},
+    "Wisconsin": {"lng": -89.6385, "lat": 43.7844},
+    "Wyoming": {"lng": -107.2903, "lat": 43.0760},
+}
+
+US_STATE_ALIASES = {
+    "AL": "Alabama",
+    "AK": "Alaska",
+    "AZ": "Arizona",
+    "AR": "Arkansas",
+    "CA": "California",
+    "CO": "Colorado",
+    "CT": "Connecticut",
+    "DE": "Delaware",
+    "DC": "District of Columbia",
+    "FL": "Florida",
+    "GA": "Georgia",
+    "HI": "Hawaii",
+    "ID": "Idaho",
+    "IL": "Illinois",
+    "IN": "Indiana",
+    "IA": "Iowa",
+    "KS": "Kansas",
+    "KY": "Kentucky",
+    "LA": "Louisiana",
+    "ME": "Maine",
+    "MD": "Maryland",
+    "MA": "Massachusetts",
+    "MI": "Michigan",
+    "MN": "Minnesota",
+    "MS": "Mississippi",
+    "MO": "Missouri",
+    "MT": "Montana",
+    "NE": "Nebraska",
+    "NV": "Nevada",
+    "NH": "New Hampshire",
+    "NJ": "New Jersey",
+    "NM": "New Mexico",
+    "NY": "New York",
+    "NC": "North Carolina",
+    "ND": "North Dakota",
+    "OH": "Ohio",
+    "OK": "Oklahoma",
+    "OR": "Oregon",
+    "PA": "Pennsylvania",
+    "RI": "Rhode Island",
+    "SC": "South Carolina",
+    "SD": "South Dakota",
+    "TN": "Tennessee",
+    "TX": "Texas",
+    "UT": "Utah",
+    "VT": "Vermont",
+    "VA": "Virginia",
+    "WA": "Washington",
+    "WV": "West Virginia",
+    "WI": "Wisconsin",
+    "WY": "Wyoming",
+}
+
+US_STATE_DISPLAY_NAMES = {
+    "Alabama": "亚拉巴马",
+    "Alaska": "阿拉斯加",
+    "Arizona": "亚利桑那",
+    "Arkansas": "阿肯色",
+    "California": "加利福尼亚",
+    "Colorado": "科罗拉多",
+    "Connecticut": "康涅狄格",
+    "Delaware": "特拉华",
+    "District of Columbia": "哥伦比亚特区",
+    "Florida": "佛罗里达",
+    "Georgia": "佐治亚",
+    "Hawaii": "夏威夷",
+    "Idaho": "爱达荷",
+    "Illinois": "伊利诺伊",
+    "Indiana": "印第安纳",
+    "Iowa": "艾奥瓦",
+    "Kansas": "堪萨斯",
+    "Kentucky": "肯塔基",
+    "Louisiana": "路易斯安那",
+    "Maine": "缅因",
+    "Maryland": "马里兰",
+    "Massachusetts": "马萨诸塞",
+    "Michigan": "密歇根",
+    "Minnesota": "明尼苏达",
+    "Mississippi": "密西西比",
+    "Missouri": "密苏里",
+    "Montana": "蒙大拿",
+    "Nebraska": "内布拉斯加",
+    "Nevada": "内华达",
+    "New Hampshire": "新罕布什尔",
+    "New Jersey": "新泽西",
+    "New Mexico": "新墨西哥",
+    "New York": "纽约",
+    "North Carolina": "北卡罗来纳",
+    "North Dakota": "北达科他",
+    "Ohio": "俄亥俄",
+    "Oklahoma": "俄克拉荷马",
+    "Oregon": "俄勒冈",
+    "Pennsylvania": "宾夕法尼亚",
+    "Rhode Island": "罗得岛",
+    "South Carolina": "南卡罗来纳",
+    "South Dakota": "南达科他",
+    "Tennessee": "田纳西",
+    "Texas": "得克萨斯",
+    "Utah": "犹他",
+    "Vermont": "佛蒙特",
+    "Virginia": "弗吉尼亚",
+    "Washington": "华盛顿",
+    "West Virginia": "西弗吉尼亚",
+    "Wisconsin": "威斯康星",
+    "Wyoming": "怀俄明",
+}
+
 
 def _normalize_geo_name(value: str) -> str:
     text = str(value or "").strip()
@@ -245,6 +407,27 @@ def _normalize_china_province_name(value: str) -> str:
     return _lookup_name_alias(CHINA_PROVINCE_ALIASES, text)
 
 
+def _normalize_us_state_name(value: str) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    alias = _lookup_name_alias(US_STATE_ALIASES, text)
+    return _lookup_name_alias(US_STATE_ALIASES, alias)
+
+
+def _coerce_geo_float(value: object, *, minimum: float, maximum: float) -> float | None:
+    try:
+        number = float(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return None
+    return number if minimum <= number <= maximum else None
+
+
+def _geo_region_name(geo: dict | None) -> str:
+    geo = geo or {}
+    return str(geo.get("region_name") or geo.get("region") or "").strip()
+
+
 def _contains_cjk(value: str) -> bool:
     return any("\u4e00" <= char <= "\u9fff" for char in str(value or ""))
 
@@ -268,9 +451,17 @@ def _resolve_chinese_province(country: str, region: str, city: str, label: str =
     return ""
 
 
-def _build_flow_display_geo(country: str, region: str, city: str, label: str, bucket: str) -> dict[str, str]:
+def _build_flow_display_geo(
+    country: str,
+    region: str,
+    city: str,
+    label: str,
+    bucket: str,
+    *,
+    country_code: str = "",
+) -> dict[str, str]:
     raw_country = str(country or "").strip()
-    display_country = _normalize_country_name(raw_country)
+    display_country = _normalize_country_name(raw_country or country_code)
     source_label = str(label or "").strip()
     province = _resolve_chinese_province(raw_country, region, city, source_label)
     normalized_region = _normalize_geo_name(region)
@@ -295,6 +486,9 @@ def _build_flow_display_geo(country: str, region: str, city: str, label: str, bu
         }
 
     if display_country:
+        if display_country == "美国":
+            normalized_state = _normalize_us_state_name(region)
+            normalized_region = US_STATE_DISPLAY_NAMES.get(normalized_state, normalized_state) or normalized_region
         display_region = normalized_region
         display_city = normalized_city if normalized_city != display_region else ""
         label_parts = [display_country]
@@ -323,6 +517,9 @@ def _build_flow_display_geo(country: str, region: str, city: str, label: str, bu
 def _geo_coordinates(country: str, region: str, city: str, bucket: str) -> dict:
     normalized_country = _normalize_country_name(country)
     province = _resolve_chinese_province(country, region, city)
+    us_state = _normalize_us_state_name(region) if normalized_country == "美国" else ""
+    if us_state in US_STATE_COORDINATES:
+        return US_STATE_COORDINATES[us_state]
     for candidate in (
         city,
         _normalize_geo_name(city),
@@ -341,6 +538,43 @@ def _geo_coordinates(country: str, region: str, city: str, bucket: str) -> dict:
         if candidate in REGION_COORDINATES:
             return REGION_COORDINATES[candidate]
     return REGION_COORDINATES["未知"]
+
+
+def _geo_display_coordinates(
+    geo: dict | None,
+    client_ip: str,
+    bucket: str,
+    target_lng: float,
+    target_lat: float,
+) -> tuple[dict, str, str]:
+    geo = geo or {}
+    lat = _coerce_geo_float(geo.get("lat"), minimum=-90.0, maximum=90.0)
+    lon = _coerce_geo_float(geo.get("lon"), minimum=-180.0, maximum=180.0)
+    if lat is not None and lon is not None:
+        return {"lng": lon, "lat": lat}, "exact", "provider_lat_lon"
+
+    country = str(geo.get("country") or "").strip()
+    country_code = str(geo.get("country_code") or "").strip()
+    region = _geo_region_name(geo)
+    city = str(geo.get("city") or "").strip()
+    normalized_country = _normalize_country_name(country or country_code)
+
+    province = _resolve_chinese_province(country or country_code, region, city, str(geo.get("label") or ""))
+    if province and province in PROVINCE_COORDINATES:
+        return dict(PROVINCE_COORDINATES[province]), "region_centroid", "region_centroid"
+
+    us_state = _normalize_us_state_name(region) if normalized_country == "美国" else ""
+    if us_state in US_STATE_COORDINATES:
+        return dict(US_STATE_COORDINATES[us_state]), "region_centroid", "region_centroid"
+
+    coords = _geo_coordinates(country or country_code, region, city, bucket)
+    unknown_coords = REGION_COORDINATES["未知"]
+    if coords != unknown_coords and (normalized_country or region or city or bucket != "未知"):
+        precision = "country_centroid" if normalized_country and not region and not city else "region_centroid"
+        return dict(coords), precision, precision
+
+    pseudo_seed = "|".join([normalized_country, region, city, client_ip])
+    return _pseudo_geo_from_ip(pseudo_seed, target_lng, target_lat), "pseudo", "pseudo_ip_hash"
 
 
 def _build_location_label(country: str, region: str, city: str, bucket: str) -> str:
@@ -462,10 +696,15 @@ def _screen_geo(ip: str, geo_cache: dict[str, dict], *, eager: bool = False, loo
     placeholder = {
         "label": "未知位置",
         "country": "",
+        "country_code": "",
         "region": "",
+        "region_name": "",
         "city": "",
         "isp": "",
+        "lat": None,
+        "lon": None,
         "source": SCREEN_GEO_PLACEHOLDER_SOURCE,
+        "geo_precision": "unknown",
     }
     return placeholder
 
@@ -527,8 +766,9 @@ def _stable_text_hash(value: str) -> int:
 
 def _pseudo_geo_from_ip(ip: str, target_lng: float, target_lat: float) -> dict:
     seed = _stable_text_hash(ip)
-    lng = ((seed & 0xFFFF) / 0xFFFF) * 358.0 - 179.0
-    lat = (((seed >> 16) & 0xFFFF) / 0xFFFF) * 125.0 - 55.0
+    lat_seed = _stable_text_hash(f"{ip}:lat")
+    lng = (seed / 0xFFFFFFFF) * 358.0 - 179.0
+    lat = (lat_seed / 0xFFFFFFFF) * 125.0 - 55.0
     if abs(lng - float(target_lng)) < 18.0 and abs(lat - float(target_lat)) < 12.0:
         lng = ((lng + 83.0 + 180.0) % 358.0) - 179.0
         lat = max(-55.0, min(70.0, -lat + 18.0))
@@ -547,7 +787,9 @@ def _is_resolved_screen_geo(geo: dict | None) -> bool:
         return True
     if source != "remote":
         return False
-    return any(str((geo or {}).get(key) or "").strip() for key in ("country", "region", "city"))
+    if (geo or {}).get("lat") is not None and (geo or {}).get("lon") is not None:
+        return True
+    return any(str((geo or {}).get(key) or "").strip() for key in ("country", "country_code", "region", "region_name", "city"))
 
 
 ALERT_STATUS_DISPOSITIONS = (
@@ -1429,10 +1671,15 @@ def init_db() -> None:
                 ip TEXT PRIMARY KEY,
                 label TEXT,
                 country TEXT,
+                country_code TEXT,
                 region TEXT,
+                region_name TEXT,
                 city TEXT,
                 isp TEXT,
+                lat REAL,
+                lon REAL,
                 source TEXT,
+                geo_precision TEXT,
                 updated_at TEXT NOT NULL
             );
 
@@ -1493,6 +1740,11 @@ def init_db() -> None:
         ensure_column(connection, "request_logs", "rule_layer", "rule_layer TEXT")
         ensure_column(connection, "request_logs", "matched_field", "matched_field TEXT")
         ensure_column(connection, "request_logs", "risk_score", "risk_score INTEGER")
+        ensure_column(connection, "ip_geo_cache", "country_code", "country_code TEXT")
+        ensure_column(connection, "ip_geo_cache", "region_name", "region_name TEXT")
+        ensure_column(connection, "ip_geo_cache", "lat", "lat REAL")
+        ensure_column(connection, "ip_geo_cache", "lon", "lon REAL")
+        ensure_column(connection, "ip_geo_cache", "geo_precision", "geo_precision TEXT")
         connection.execute(
             """
             UPDATE request_logs
@@ -1883,7 +2135,7 @@ def _infer_geo_bucket(ip: str, geo: dict | None) -> str:
         return "未知"
 
     country = str(geo.get("country") or "")
-    region = str(geo.get("region") or "")
+    region = _geo_region_name(geo)
     city = str(geo.get("city") or "")
     geo_text = f"{country}{region}{city}"
 
@@ -2084,7 +2336,7 @@ def get_overview(hours: int = 24) -> dict:
 
         geo_cache_rows = connection.execute(
             """
-            SELECT ip, label, country, region, city, isp, source
+            SELECT ip, label, country, country_code, region, region_name, city, isp, lat, lon, source, geo_precision
             FROM ip_geo_cache
             """
         ).fetchall()
@@ -2266,7 +2518,7 @@ def _legacy_get_screen_data_from_overview(hours: int = 24) -> dict:
 
         geo_cache_rows = connection.execute(
             """
-            SELECT ip, label, country, region, city, isp, source
+            SELECT ip, label, country, country_code, region, region_name, city, isp, lat, lon, source, geo_precision
             FROM ip_geo_cache
             """
         ).fetchall()
@@ -2540,7 +2792,7 @@ def _load_ip_geo_rows(connection: sqlite3.Connection, ips: set[str] | None) -> d
     placeholders = ",".join("?" for _ in cleaned)
     rows = connection.execute(
         f"""
-        SELECT ip, label, country, region, city, isp, source
+        SELECT ip, label, country, country_code, region, region_name, city, isp, lat, lon, source, geo_precision
         FROM ip_geo_cache
         WHERE ip IN ({placeholders})
         """,
@@ -3058,6 +3310,7 @@ def _legacy_get_screen_data_split_merge(hours: int = 24) -> dict:
 
 
 SCREEN_SNAPSHOT_CACHE_TTL_SECONDS = 7
+SCREEN_VISIBLE_FLOW_LIMIT = 20
 SCREEN_RAW_FLOW_LIMIT = 240
 SCREEN_AGGREGATED_FLOW_LIMIT = 72
 SCREEN_DISPOSITION_KEYS = ("real_attack", "customer_business", "pending_business", "reported_alert", "whitelist_traffic")
@@ -3098,6 +3351,58 @@ def _is_valid_observed_target_host(value: str | None) -> bool:
 
 def _screen_severity_weight(value: str | None) -> int:
     return SCREEN_SEVERITY_WEIGHT.get(str(value or "").strip().lower(), 0)
+
+
+def _select_screen_visible_attack_rows(rows: list[dict], limit: int = SCREEN_VISIBLE_FLOW_LIMIT) -> list[dict]:
+    by_source: dict[str, dict] = {}
+    for index, row in enumerate(rows):
+        source_ip = str(row.get("screen_client_ip") or row.get("client_ip") or "").strip()
+        if not source_ip:
+            continue
+        severity_weight = _screen_severity_weight(row.get("screen_severity") or row.get("severity"))
+        created_at = str(row.get("created_at") or "")
+        item = by_source.setdefault(
+            source_ip,
+            {
+                "row": row,
+                "count": 0,
+                "critical": 0,
+                "high": 0,
+                "blocked": 0,
+                "severity_weight": severity_weight,
+                "latest": created_at,
+                "first_index": index,
+            },
+        )
+        item["count"] += 1
+        item["first_index"] = min(int(item["first_index"]), index)
+        if severity_weight > int(item["severity_weight"]):
+            item["row"] = row
+            item["severity_weight"] = severity_weight
+        elif severity_weight == int(item["severity_weight"]) and created_at > str(item["latest"] or ""):
+            item["row"] = row
+        item["latest"] = max(str(item["latest"] or ""), created_at)
+        if str(row.get("screen_severity") or row.get("severity") or "").strip().lower() == "critical":
+            item["critical"] += 1
+        if is_high_risk_severity(row.get("screen_severity") or row.get("severity")):
+            item["high"] += 1
+        if str(row.get("screen_action") or row.get("action") or "").strip() == "blocked":
+            item["blocked"] += 1
+
+    ranked = sorted(
+        by_source.values(),
+        key=lambda item: (
+            int(item["severity_weight"]),
+            int(item["critical"]),
+            int(item["high"]),
+            int(item["blocked"]),
+            int(item["count"]),
+            str(item["latest"] or ""),
+            -int(item["first_index"]),
+        ),
+        reverse=True,
+    )
+    return [dict(item["row"]) for item in ranked[: max(1, limit)]]
 
 
 def _validate_screen_total(total_handled: int, disposition_counts: dict[str, int], scope: str) -> int:
@@ -3606,7 +3911,14 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
         for row in attack_rows
         if str(row.get("screen_client_ip") or "").strip()
     }
-    selected_attack_ips = _screen_geo_prewarm_ips(attack_rows)
+    visible_attack_rows = _select_screen_visible_attack_rows(attack_rows, SCREEN_VISIBLE_FLOW_LIMIT)
+    visible_row_ids = {int(row.get("id") or 0) for row in visible_attack_rows}
+    visible_row_order = {int(row.get("id") or 0): index for index, row in enumerate(visible_attack_rows)}
+    selected_attack_ips = {
+        str(row.get("screen_client_ip") or "").strip()
+        for row in visible_attack_rows
+        if str(row.get("screen_client_ip") or "").strip()
+    }
     with closing(get_connection()) as connection:
         geo_cache = _load_ip_geo_rows(connection, all_attack_ips)
 
@@ -3621,50 +3933,46 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
     for index, row in enumerate(attack_rows):
         client_ip = str(row.get("screen_client_ip") or "").strip()
         geo = _screen_geo(client_ip, geo_cache, eager=False, lookup_cache=False) if client_ip else {}
+        geo_country = str(geo.get("country", "") or "")
+        geo_country_code = str(geo.get("country_code", "") or "")
+        geo_region = _geo_region_name(geo)
+        geo_city = str(geo.get("city", "") or "")
         bucket = _infer_geo_bucket(client_ip, geo)
         source_name = _build_screen_flow_name(
-            str(geo.get("country", "") or ""),
-            str(geo.get("region", "") or ""),
-            str(geo.get("city", "") or ""),
+            geo_country or geo_country_code,
+            geo_region,
+            geo_city,
             bucket,
             str(geo.get("label", "") or ""),
         )
         source_label = str(
             geo.get("label", "")
             or _build_location_label(
-                str(geo.get("country", "") or ""),
-                str(geo.get("region", "") or ""),
-                str(geo.get("city", "") or ""),
+                geo_country or geo_country_code,
+                geo_region,
+                geo_city,
                 bucket,
             )
         )
-        coords = _geo_coordinates(
-            str(geo.get("country", "") or ""),
-            str(geo.get("region", "") or ""),
-            str(geo.get("city", "") or ""),
-            bucket,
-        )
         display_geo = _build_flow_display_geo(
-            str(geo.get("country", "") or ""),
-            str(geo.get("region", "") or ""),
-            str(geo.get("city", "") or ""),
+            geo_country,
+            geo_region,
+            geo_city,
             source_label,
             bucket,
+            country_code=geo_country_code,
         )
         geo_source = str(geo.get("source", "") or "")
         geo_resolved = _is_resolved_screen_geo(geo)
-        display_coords = coords
-        display_geo_mode = "resolved" if geo_resolved else "pseudo"
-        display_coord_source = geo_source or "geo"
-        pseudo_tile = ""
-        if client_ip and not geo_resolved:
-            display_coords = _pseudo_geo_from_ip(
-                client_ip,
-                float(target_settings["lng"]),
-                float(target_settings["lat"]),
-            )
-            display_coord_source = "pseudo_ip_hash"
-            pseudo_tile = _pseudo_geo_tile(display_coords)
+        display_coords, geo_precision, display_coord_source = _geo_display_coordinates(
+            geo,
+            client_ip,
+            bucket,
+            float(target_settings["lng"]),
+            float(target_settings["lat"]),
+        )
+        display_geo_mode = "pseudo" if geo_precision == "pseudo" else "resolved"
+        pseudo_tile = _pseudo_geo_tile(display_coords) if geo_precision == "pseudo" else ""
         severity = str(row.get("screen_severity") or "medium")
         origin_counter[source_name] += 1
 
@@ -3676,9 +3984,9 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
                 "critical_count": 0,
                 "high_count": 0,
                 "label": _build_location_label(
-                    str(geo.get("country", "") or ""),
-                    str(geo.get("region", "") or ""),
-                    str(geo.get("city", "") or ""),
+                    geo_country or geo_country_code,
+                    geo_region,
+                    geo_city,
                     bucket,
                 ),
                 "geo_label": str(geo.get("label", "") or source_label),
@@ -3691,8 +3999,11 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
         if is_high_risk_severity(severity):
             attack_ip_item["high_count"] += 1
 
+        coord_key = f"{round(float(display_coords['lng']), 2)}:{round(float(display_coords['lat']), 2)}"
         aggregated_key = (
-            f"{source_name}:{bucket}" if geo_resolved else f"unresolved:{bucket}:{pseudo_tile or client_ip}"
+            f"{display_geo['display_label'] or source_name}:{bucket}:{coord_key}"
+            if geo_precision != "pseudo"
+            else f"unresolved:{bucket}:{pseudo_tile or client_ip}"
         )
         aggregated_item = aggregated_flow_map.setdefault(
             aggregated_key,
@@ -3701,9 +4012,11 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
                 "source_name": source_name,
                 "source_bucket": bucket,
                 "source_geo": source_label,
-                "source_country": str(geo.get("country", "") or ""),
-                "source_region": str(geo.get("region", "") or ""),
-                "source_city": str(geo.get("city", "") or ""),
+                "source_country": geo_country,
+                "source_country_code": geo_country_code,
+                "source_region": geo_region,
+                "source_region_name": geo_region,
+                "source_city": geo_city,
                 "source_province": display_geo["source_province"],
                 "source_label": source_label,
                 "display_country": display_geo["display_country"],
@@ -3716,6 +4029,7 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
                 "geo_source": geo_source or SCREEN_GEO_PLACEHOLDER_SOURCE,
                 "display_geo_mode": display_geo_mode,
                 "display_coord_source": display_coord_source,
+                "geo_precision": geo_precision,
                 "pseudo_tile": pseudo_tile,
                 "count": 0,
                 "blocked_count": 0,
@@ -3731,7 +4045,8 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
         if is_high_risk_severity(severity):
             aggregated_item["high_count"] += 1
 
-        if index >= SCREEN_RAW_FLOW_LIMIT:
+        row_id = int(row.get("id") or 0)
+        if row_id not in visible_row_ids:
             continue
 
         raw_flows.append(
@@ -3744,9 +4059,11 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
                 "source_name": source_name,
                 "source_geo": source_label,
                 "source_bucket": bucket,
-                "source_country": str(geo.get("country", "") or ""),
-                "source_region": str(geo.get("region", "") or ""),
-                "source_city": str(geo.get("city", "") or ""),
+                "source_country": geo_country,
+                "source_country_code": geo_country_code,
+                "source_region": geo_region,
+                "source_region_name": geo_region,
+                "source_city": geo_city,
                 "source_province": display_geo["source_province"],
                 "source_label": source_label,
                 "display_country": display_geo["display_country"],
@@ -3759,6 +4076,7 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
                 "geo_source": geo_source or SCREEN_GEO_PLACEHOLDER_SOURCE,
                 "display_geo_mode": display_geo_mode,
                 "display_coord_source": display_coord_source,
+                "geo_precision": geo_precision,
                 "pseudo_tile": pseudo_tile,
                 "severity": severity,
                 "action": str(row.get("screen_action") or row.get("action") or ""),
@@ -3768,6 +4086,8 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
                 "screen_segment": row.get("screen_segment"),
             }
         )
+
+    raw_flows.sort(key=lambda item: visible_row_order.get(int(item.get("event_id") or 0), SCREEN_VISIBLE_FLOW_LIMIT))
 
     handled_total_raw = sum(int(disposition_counts.get(key) or 0) for key in SCREEN_DISPOSITION_KEYS)
     total_handled = _validate_screen_total(handled_total_raw, disposition_counts, "screen_snapshot")
@@ -3814,12 +4134,14 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
         item["target_label"] = target_settings["label"]
         item["target_lng"] = target_settings["lng"]
         item["target_lat"] = target_settings["lat"]
+        item["flow_layer"] = "representative"
 
     for item in raw_flows:
         item["target_name"] = target_settings["name"]
         item["target_label"] = target_settings["label"]
         item["target_lng"] = target_settings["lng"]
         item["target_lat"] = target_settings["lat"]
+        item["flow_layer"] = "raw"
 
     severity_distribution = [
         {"key": "critical", "name": "严重", "count": int(severity_counter.get("critical", 0))},
@@ -3848,7 +4170,7 @@ def _build_screen_snapshot(hours: int = 24) -> dict:
         "geo_placeholder_raw_flow_count": returned_raw_flow_count - geo_resolved_raw_flow_count,
         "rendered_candidate_flow_count": returned_raw_flow_count + returned_aggregated_flow_count,
         "dropped_by_normalize_key_count": max(0, returned_raw_flow_count - len(raw_flow_keys)),
-        "dropped_by_profile_limit_count": max(0, returned_raw_flow_count - 50),
+        "dropped_by_profile_limit_count": max(0, len(attack_rows) - SCREEN_VISIBLE_FLOW_LIMIT),
     }
     diagnostics = {
         "handled_total_raw": handled_total_raw,
@@ -4816,7 +5138,7 @@ def get_cached_ip_geo(ip: str, max_age_hours: int = 72) -> dict | None:
     with closing(get_connection()) as connection:
         row = connection.execute(
             """
-            SELECT ip, label, country, region, city, isp, source, updated_at
+            SELECT ip, label, country, country_code, region, region_name, city, isp, lat, lon, source, geo_precision, updated_at
             FROM ip_geo_cache
             WHERE ip = ? AND updated_at >= ?
             """,
@@ -4832,25 +5154,37 @@ def cache_ip_geo(ip: str, geo: dict) -> None:
     with closing(get_connection()) as connection:
         connection.execute(
             """
-            INSERT INTO ip_geo_cache (ip, label, country, region, city, isp, source, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO ip_geo_cache (
+                ip, label, country, country_code, region, region_name, city, isp, lat, lon, source, geo_precision, updated_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(ip) DO UPDATE SET
                 label=excluded.label,
                 country=excluded.country,
+                country_code=excluded.country_code,
                 region=excluded.region,
+                region_name=excluded.region_name,
                 city=excluded.city,
                 isp=excluded.isp,
+                lat=excluded.lat,
+                lon=excluded.lon,
                 source=excluded.source,
+                geo_precision=excluded.geo_precision,
                 updated_at=excluded.updated_at
             """,
             (
                 ip,
                 geo.get("label", ""),
                 geo.get("country", ""),
+                geo.get("country_code", ""),
                 geo.get("region", ""),
+                geo.get("region_name", geo.get("region", "")),
                 geo.get("city", ""),
                 geo.get("isp", ""),
+                geo.get("lat"),
+                geo.get("lon"),
                 geo.get("source", ""),
+                geo.get("geo_precision", ""),
                 utcnow_iso(),
             ),
         )

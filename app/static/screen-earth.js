@@ -1,5 +1,6 @@
 const GLOBE_VENDOR_URL = "/static/vendor/globe.gl.min.js?v=2.45.3";
 const EARTH_IMAGE_URL = "/static/earth/earth.jpg";
+const MAX_VISIBLE_ATTACK_FLOWS = 20;
 
 const DEFAULT_TARGET = {
   name: "业务主站",
@@ -10,26 +11,26 @@ const DEFAULT_TARGET = {
 
 const PERFORMANCE_PRESETS = {
   easy: {
-    maxRawFlows: 50,
-    maxRepresentativeFlows: 8,
-    maxFlows: 58,
-    maxSourceLabels: 6,
+    maxRawFlows: MAX_VISIBLE_ATTACK_FLOWS,
+    maxRepresentativeFlows: MAX_VISIBLE_ATTACK_FLOWS,
+    maxFlows: MAX_VISIBLE_ATTACK_FLOWS,
+    maxSourceLabels: MAX_VISIBLE_ATTACK_FLOWS,
     maxSourceRings: 8,
     targetAltitude: 2.25,
   },
   normal: {
-    maxRawFlows: 70,
-    maxRepresentativeFlows: 14,
-    maxFlows: 84,
-    maxSourceLabels: 9,
+    maxRawFlows: MAX_VISIBLE_ATTACK_FLOWS,
+    maxRepresentativeFlows: MAX_VISIBLE_ATTACK_FLOWS,
+    maxFlows: MAX_VISIBLE_ATTACK_FLOWS,
+    maxSourceLabels: MAX_VISIBLE_ATTACK_FLOWS,
     maxSourceRings: 12,
     targetAltitude: 2.08,
   },
   high: {
-    maxRawFlows: 96,
-    maxRepresentativeFlows: 18,
-    maxFlows: 114,
-    maxSourceLabels: 12,
+    maxRawFlows: MAX_VISIBLE_ATTACK_FLOWS,
+    maxRepresentativeFlows: MAX_VISIBLE_ATTACK_FLOWS,
+    maxFlows: MAX_VISIBLE_ATTACK_FLOWS,
+    maxSourceLabels: MAX_VISIBLE_ATTACK_FLOWS,
     maxSourceRings: 16,
     targetAltitude: 1.95,
   },
@@ -453,6 +454,17 @@ function flowIdentity(flow, layer) {
   ]);
 }
 
+function sourceDisplayKey(flow) {
+  return joinSignature([
+    flow?.source_ip,
+    flow?.display_country || flow?.source_country,
+    flow?.display_region || flow?.source_region_name || flow?.source_region,
+    flow?.display_city || flow?.source_city,
+    toFiniteNumber(flow?.source_lng).toFixed(3),
+    toFiniteNumber(flow?.source_lat).toFixed(3),
+  ]);
+}
+
 function sortByImportance(left, right) {
   const severityCompare = severityMeta(right?.severity).weight - severityMeta(left?.severity).weight;
   if (severityCompare !== 0) {
@@ -505,6 +517,9 @@ function selectRenderableFlows(rawFlows, representativeFlows, target, profile) {
   const selected = [];
   const usedKeys = new Set();
   for (const flow of rawCandidates) {
+    if (selected.length >= MAX_VISIBLE_ATTACK_FLOWS) {
+      break;
+    }
     const key = flowIdentity(flow, "raw");
     if (usedKeys.has(key)) {
       continue;
@@ -520,7 +535,7 @@ function selectRenderableFlows(rawFlows, representativeFlows, target, profile) {
     .filter(Boolean);
 
   for (const flow of representativeCandidates) {
-    if (selected.length >= profile.maxFlows) {
+    if (selected.length >= MAX_VISIBLE_ATTACK_FLOWS) {
       break;
     }
     const key = flowIdentity(flow, "representative");
@@ -538,9 +553,9 @@ function selectRenderableFlows(rawFlows, representativeFlows, target, profile) {
     rawCandidates.map((flow) => String(flow?.source_ip || "").trim()).filter(Boolean)
   );
   if (distinctRawIps.size > 1 && selected.length <= 1) {
-    return rawCandidates.slice(0, Math.min(profile.maxRawFlows, profile.maxFlows));
+    return rawCandidates.slice(0, MAX_VISIBLE_ATTACK_FLOWS);
   }
-  return selected.slice(0, profile.maxFlows);
+  return selected.slice(0, MAX_VISIBLE_ATTACK_FLOWS);
 }
 
 function arcAltitude(flow) {
@@ -587,21 +602,14 @@ function buildArcLayers(flows) {
 }
 
 function buildPointLayers(flows, target) {
-  const bySource = new Map();
-  for (const flow of flows) {
-    const key = String(flow.source_ip || "") || `${flow.source_lng.toFixed(3)}:${flow.source_lat.toFixed(3)}`;
-    const existing = bySource.get(key);
-    if (!existing || sortByImportance(flow, existing) < 0) {
-      bySource.set(key, flow);
-    }
-  }
-  const sourcePoints = Array.from(bySource.values()).map((flow) => ({
+  const sourcePoints = flows.map((flow, index) => ({
     kind: "source",
     lat: flow.source_lat,
     lng: flow.source_lng,
     severity: flow.severity,
     flow,
     count: flow.count,
+    key: `${sourceDisplayKey(flow)}:${index}`,
   }));
   return [
     ...sourcePoints,
@@ -697,20 +705,9 @@ function pickVisibleLabels(flows, target, profile) {
     },
   ];
 
-  const seen = new Set();
-  const labelFlows = flows
-    .filter((flow) => flow.flow_layer !== "representative")
-    .slice()
-    .sort(sortByImportance);
-  for (const flow of labelFlows) {
-    if (labels.length > profile.maxSourceLabels) {
-      break;
-    }
-    const key = String(flow.source_ip || "") || `${flow.source_lng.toFixed(3)}:${flow.source_lat.toFixed(3)}`;
-    if (seen.has(key)) {
-      continue;
-    }
-    seen.add(key);
+  const labelFlows = flows.slice(0, Math.min(profile.maxSourceLabels, MAX_VISIBLE_ATTACK_FLOWS));
+  for (const [index, flow] of labelFlows.entries()) {
+    const key = sourceDisplayKey(flow) || flowIdentity(flow, flow.flow_layer);
     labels.push({
       kind: "source",
       lat: flow.source_lat,
@@ -742,10 +739,13 @@ function buildSignature(target, flows) {
         flow.severity,
         flow.count,
         flow.source_ip,
+        flow.source_country_code,
+        flow.source_region_name,
         flow.source_lng.toFixed(3),
         flow.source_lat.toFixed(3),
         flow.target_lng.toFixed(3),
         flow.target_lat.toFixed(3),
+        flow.geo_precision,
         flow.display_geo_mode,
         flow.display_coord_source,
         flow.pseudo_tile,
