@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ app_name }} - AI 日志分析</title>
+    <link rel="stylesheet" href="../static/styles.css" />
+    <style>
+      .log-analysis-shell { padding: 0 32px 48px; display: grid; gap: 28px; }
+      .analysis-status-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 18px 24px; border-radius: 20px; background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.92)); border: 1px solid rgba(96, 165, 250, 0.22); color: #e2ecff; }
+      .analysis-status-left, .analysis-status-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+      .analysis-status-label { font-size: 13px; color: rgba(191, 219, 254, 0.72); }
+      .analysis-status-value { font-size: 14px; font-weight: 700; color: #f8fbff; }
+      .analysis-status-sep { width: 1px; height: 28px; background: rgba(96, 165, 250, 0.22); }
+      .countdown-chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: rgba(37, 99, 235, 0.18); border: 1px solid rgba(96, 165, 250, 0.28); color: #93c5fd; font-size: 13px; font-weight: 700; }
+      .countdown-dot { width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; animation: countdownPulse 2s ease-in-out infinite; }
+      @keyframes countdownPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.45; transform: scale(0.82); } }
+      .analysis-trigger-btn, .export-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 22px; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.18s, transform 0.18s, background 0.18s; }
+      .analysis-trigger-btn { border: 0; background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; box-shadow: 0 12px 28px rgba(37, 99, 235, 0.28); }
+      .export-btn { border: 1px solid rgba(88, 143, 207, 0.58); background: rgba(13, 89, 255, 0.18); color: #eff6ff; }
+      .analysis-trigger-btn:disabled, .export-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+      .analysis-trigger-btn:not(:disabled):hover, .export-btn:not(:disabled):hover { transform: translateY(-1px); }
+      .analysis-loading-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(15, 23, 42, 0.58); backdrop-filter: blur(8px); align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
+      .analysis-loading-overlay.active { display: flex; }
+      .loading-spinner { width: 56px; height: 56px; border: 4px solid rgba(96, 165, 250, 0.22); border-top-color: #3b82f6; border-radius: 50%; animation: spinRot 0.9s linear infinite; }
+      @keyframes spinRot { to { transform: rotate(360deg); } }
+      .loading-text { color: #e2ecff; font-size: 16px; font-weight: 700; }
+      .loading-sub { color: rgba(191, 219, 254, 0.66); font-size: 13px; }
+      .analysis-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 80px 40px; border-radius: 24px; background: rgba(255, 255, 255, 0.72); border: 1px solid rgba(191, 219, 254, 0.48); color: var(--muted); text-align: center; }
+      .analysis-empty-icon { font-size: 56px; opacity: 0.38; }
+      .analysis-empty h3 { margin: 0; font-size: 22px; }
+      .analysis-empty p { margin: 0; line-height: 1.7; }
+      .analysis-overview-card { padding: 24px 28px; border-radius: 22px; background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.9)); border: 1px solid rgba(96, 165, 250, 0.2); color: #e2ecff; }
+      .analysis-overview-summary { line-height: 1.8; color: rgba(205, 220, 255, 0.88); font-size: 15px; }
+      .threat-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 800; letter-spacing: 0.06em; }
+      .threat-badge.critical { background: rgba(127, 29, 29, 0.18); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.36); }
+      .threat-badge.high { background: rgba(254, 226, 226, 0.92); color: #b91c1c; border: 1px solid rgba(220, 38, 38, 0.28); }
+      .threat-badge.medium { background: rgba(254, 243, 199, 0.92); color: #b45309; border: 1px solid rgba(202, 138, 4, 0.28); }
+      .threat-badge.low { background: rgba(220, 252, 231, 0.92); color: #15803d; border: 1px solid rgba(34, 197, 94, 0.28); }
+      .analysis-overview-meta { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px; }
+      .analysis-meta-item { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(96, 165, 250, 0.16); min-width: 100px; }
+      .analysis-meta-item span { font-size: 12px; color: rgba(191, 219, 254, 0.68); }
+      .analysis-meta-item strong { font-size: 22px; color: #fff; }
+      .analysis-results-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 22px; align-items: start; margin-top: 22px; }
+      .analysis-right-col, .ip-anomaly-list, .finding-list { display: grid; gap: 18px; }
+      .finding-list { gap: 14px; }
+      .ip-anomaly-card { padding: 18px 20px; border-radius: 18px; background: rgba(255, 255, 255, 0.86); border: 1px solid rgba(191, 219, 254, 0.52); transition: transform 0.16s, box-shadow 0.16s; border-left: 4px solid rgba(148, 163, 184, 0.4); }
+      .ip-anomaly-card:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(37, 99, 235, 0.1); }
+      .ip-anomaly-card.critical { border-left-color: #dc2626; background: linear-gradient(135deg, rgba(254, 226, 226, 0.72), rgba(255, 255, 255, 0.88)); }
+      .ip-anomaly-card.high { border-left-color: #ef4444; background: linear-gradient(135deg, rgba(254, 226, 226, 0.5), rgba(255, 255, 255, 0.86)); }
+      .ip-anomaly-card.medium { border-left-color: #f59e0b; }
+      .ip-anomaly-card.low { border-left-color: #22c55e; }
+      .ip-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+      .ip-card-title { display: flex; align-items: flex-start; gap: 10px; min-width: 0; flex: 1 1 100%; width: 100%; }
+      .ip-card-address { display: block; width: 100%; max-width: 100%; font-size: 17px; font-weight: 800; font-family: "Consolas", "Courier New", monospace; color: #0f172a; white-space: normal; overflow: visible; text-overflow: clip; word-break: break-all; overflow-wrap: anywhere; min-width: 0; flex: 1 1 auto; line-height: 1.45; }
+      .ip-card-body { display: grid; gap: 7px; }
+      .ip-card-row { display: flex; gap: 8px; align-items: baseline; font-size: 13px; line-height: 1.6; }
+      .ip-card-key { color: var(--muted); font-weight: 700; min-width: 74px; flex-shrink: 0; }
+      .ip-card-val { color: #1e293b; overflow-wrap: anywhere; word-break: break-word; }
+      .ip-ban-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 10px; background: rgba(220, 38, 38, 0.1); color: #b91c1c; font-size: 12px; font-weight: 700; border: 1px solid rgba(220, 38, 38, 0.22); margin-top: 4px; }
+      .finding-item { display: flex; gap: 11px; align-items: flex-start; padding: 11px 13px; border-radius: 13px; background: rgba(255, 255, 255, 0.74); border: 1px solid rgba(191, 219, 254, 0.44); font-size: 13px; line-height: 1.65; }
+      .finding-bullet { flex-shrink: 0; margin-top: 2px; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(37, 99, 235, 0.14); color: #2563eb; font-size: 11px; font-weight: 800; }
+      .finding-item.warning .finding-bullet { background: rgba(245, 158, 11, 0.16); color: #b45309; }
+      .finding-item.success .finding-bullet { background: rgba(34, 197, 94, 0.16); color: #15803d; }
+      .finding-item.danger .finding-bullet { background: rgba(220, 38, 38, 0.16); color: #b91c1c; }
+      .ban-policy-card { padding: 20px 24px; border-radius: 18px; background: linear-gradient(135deg, rgba(30, 58, 138, 0.08), rgba(37, 99, 235, 0.06)); border: 1px solid rgba(96, 165, 250, 0.28); }
+      .ban-policy-card h3 { margin: 0 0 10px; font-size: 16px; color: #1d4ed8; }
+      .ban-policy-text { line-height: 1.8; color: #1e293b; font-size: 14px; }
+      .analysis-error { padding: 18px 22px; border-radius: 16px; background: rgba(254, 226, 226, 0.86); border: 1px solid rgba(220, 38, 38, 0.28); color: #b91c1c; font-size: 14px; font-weight: 600; }
+      .priority-badge { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: rgba(37, 99, 235, 0.14); color: #1d4ed8; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+      .priority-badge.p1 { background: rgba(220, 38, 38, 0.18); color: #b91c1c; }
+      .priority-badge.p2 { background: rgba(245, 158, 11, 0.18); color: #b45309; }
+      .agent-status-indicator { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #ef4444; transition: background 0.3s ease; }
+      .agent-status-indicator.online { background: #22c55e; }
+      .agent-status-indicator.offline { background: #ef4444; }
+      @media (max-width: 1100px) { .analysis-results-grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body class="dashboard-page" data-page="log-analysis">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div>
+          <span class="eyebrow">MAGUALINE</span>
+          <h1 style="display:flex;align-items:center;gap:10px;">
+            AI 日志分析
+            <span id="agent-status-indicator" class="agent-status-indicator" title="Agent 状态"></span>
+          </h1>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <nav class="nav-tabs">
+          <a href="/dashboard" class="nav-tab {% if active_page == 'dashboard' %}active{% endif %}">仪表盘</a>
+          <a href="/screen" class="nav-tab {% if active_page == 'screen' %}active{% endif %}">态势大屏</a>
+          <a href="/logs" class="nav-tab {% if active_page == 'logs' %}active{% endif %}">日志中心</a>
+          <a href="/block" class="nav-tab {% if active_page == 'block' %}active{% endif %}">封禁 IP</a>
+        </nav>
+        <span id="runtime-user" class="muted-text">admin</span>
+        <button id="logout-button" class="ghost-button" type="button">退出登录</button>
+      </div>
+    </header>
+
+    <div id="analysis-loading" class="analysis-loading-overlay">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">AI 正在分析日志数据…</div>
+      <div class="loading-sub" id="loading-status">正在处理过去 24 小时的日志样本，请稍候</div>
+    </div>
+
+    <main class="log-analysis-shell">
+      <div class="analysis-status-bar">
+        <div class="analysis-status-left">
+          <div>
+            <div class="analysis-status-label">分析窗口</div>
+            <div class="analysis-status-value">最近 24 小时</div>
+          </div>
+          <div class="analysis-status-sep"></div>
+          <div>
+            <div class="analysis-status-label">上次分析时间</div>
+            <div class="analysis-status-value" id="last-analysis-time">尚未分析</div>
+          </div>
+          <div class="analysis-status-sep"></div>
+          <div>
+            <div class="analysis-status-label">下次自动分析</div>
+            <div class="countdown-chip">
+              <span class="countdown-dot"></span>
+              <span id="next-analysis-countdown">等待触发</span>
+            </div>
+          </div>
+        </div>
+        <div class="analysis-status-right">
+          <button id="export-btn" class="export-btn" type="button" disabled>导出报告</button>
+          <button id="trigger-analysis-btn" class="analysis-trigger-btn" type="button">立即分析</button>
+        </div>
+      </div>
+
+      <div id="analysis-result-container">
+        <div id="analysis-empty-state" class="analysis-empty">
+          <div class="analysis-empty-icon">📊</div>
+          <h3>点击“立即分析”开始</h3>
+          <p>系统将对过去 24 小时的日志数据进行 AI 分析，识别异常 IP、攻击模式并生成处置建议</p>
+        </div>
+
+        <div id="analysis-error-state" class="analysis-error" hidden></div>
+
+        <div id="analysis-result" hidden>
+          <div class="analysis-overview-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+              <h3 id="result-title">AI 日志分析</h3>
+              <span id="result-threat-badge" class="threat-badge medium">中危</span>
+            </div>
+            <div id="result-overview-summary" class="analysis-overview-summary"></div>
+            <div class="analysis-overview-meta" id="overview-meta"></div>
+          </div>
+
+          <div class="analysis-results-grid">
+            <div>
+              <div class="panel" style="padding:22px;">
+                <div class="panel-header">
+                  <div>
+                    <h2>异常 IP 详情</h2>
+                    <span class="panel-subtitle">按风险等级排序，支持完整展示 IP 与证据</span>
+                  </div>
+                  <span id="anomaly-ip-count" class="count-pill">0 个</span>
+                </div>
+                <div id="anomaly-ip-list" class="ip-anomaly-list"></div>
+              </div>
+
+              <div class="panel" style="padding:22px;">
+                <div class="panel-header"><h2>攻击模式分析</h2></div>
+                <div id="attack-patterns-list" class="finding-list"></div>
+              </div>
+
+              <div class="panel" style="padding:22px;">
+                <div class="panel-header"><h2>安全注意事项</h2></div>
+                <div id="security-notices-list" class="finding-list"></div>
+              </div>
+
+              <div id="ban-policy-card" class="ban-policy-card" hidden>
+                <h3>IP 封禁策略建议</h3>
+                <div id="ban-policy-text" class="ban-policy-text"></div>
+              </div>
+            </div>
+
+            <div class="analysis-right-col">
+              <div class="panel" style="padding:22px;">
+                <div class="panel-header"><h2>关键发现</h2></div>
+                <div id="key-findings-list" class="finding-list"></div>
+              </div>
+
+              <div class="panel" style="padding:22px;">
+                <div class="panel-header"><h2>风险评估</h2></div>
+                <div id="risk-summary-list" class="finding-list"></div>
+              </div>
+
+              <div class="panel" style="padding:22px;">
+                <div class="panel-header"><h2>安全建议</h2></div>
+                <div id="recommendations-list" class="finding-list"></div>
+              </div>
+
+              <div class="panel" style="padding:22px;">
+                <div class="panel-header"><h2>下一步行动</h2></div>
+                <div id="next-steps-list" class="finding-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      const EIGHT_HOURS_MS = 8 * 60 * 60 * 1000;
+      const ANALYSIS_TIMEOUT_MS = 10 * 60 * 1000;
+      const PAGE_ANALYSIS_CACHE_KEY = "magualine:log-analysis:24h";
+      const PAGE_ANALYSIS_CACHE_TTL_MS = EIGHT_HOURS_MS;
+      let currentDisplayData = null;
+      let currentAnalysisTime = "";
+      let countdownTimer = null;
+
+      function fmtTime(value) {
+        if (!value) return "-";
+        return new Date(value).toLocaleString("zh-CN", { hour12: false });
+      }
+      function escH(value) {
+        return String(value == null ? "" : value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+      const THREAT_LABELS = { critical: "严重", high: "高危", medium: "中危", low: "低危" };
+
+      function readPageCache() {
+        try {
+          const raw = localStorage.getItem(PAGE_ANALYSIS_CACHE_KEY);
+          if (!raw) return null;
+          const payload = JSON.parse(raw);
+          const cachedAt = Number((payload && payload.cachedAt) || 0);
+          if (!payload || !payload.display || !cachedAt || Date.now() - cachedAt > PAGE_ANALYSIS_CACHE_TTL_MS) {
+            localStorage.removeItem(PAGE_ANALYSIS_CACHE_KEY);
+            return null;
+          }
+          return payload;
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function writePageCache(payload) {
+        try {
+          localStorage.setItem(PAGE_ANALYSIS_CACHE_KEY, JSON.stringify({
+            display: payload.display || null,
+            analysis_time: payload.analysis_time || "",
+            mode: payload.mode || "ai",
+            cachedAt: Date.now(),
+          }));
+        } catch (error) {}
+      }
+
+      function renderFindingList(containerId, items, cssClass) {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        if (!items || !items.length) {
+          el.innerHTML = '<div class="empty-state">暂无数据</div>';
+          return;
+        }
+        el.innerHTML = items.map((item, index) => `
+          <div class="finding-item ${escH(cssClass || "")}">
+            <span class="finding-bullet">${index + 1}</span>
+            <span>${escH(item)}</span>
+          </div>
+        `).join("");
+      }
+
+      function renderAnomalyIps(ips) {
+        const el = document.getElementById("anomaly-ip-list");
+        const countEl = document.getElementById("anomaly-ip-count");
+        if (!el) return;
+        const list = Array.isArray(ips) ? ips : [];
+        if (countEl) countEl.textContent = `${list.length} 个`;
+        if (!list.length) {
+          el.innerHTML = '<div class="empty-state">未检测到明显异常 IP</div>';
+          return;
+        }
+        const riskOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+        const sorted = [...list].sort((a, b) => (riskOrder[a.risk_level] || 9) - (riskOrder[b.risk_level] || 9));
+        el.innerHTML = sorted.map((ip) => {
+          const rl = ip.risk_level || "medium";
+          const ban = ip.ban_suggestion || {};
+          const anomalyType = ip.anomaly_type || "待补充异常类型";
+          const evidence = ip.evidence || "待补充异常证据";
+          const banReason = ban.reason || anomalyType;
+          return `
+            <div class="ip-anomaly-card ${escH(rl)}">
+              <div class="ip-card-header">
+                <div class="ip-card-title">
+                  ${ip.priority ? `<span class="priority-badge ${ip.priority === 1 ? "p1" : ip.priority === 2 ? "p2" : ""}">${escH(ip.priority)}</span>` : ""}
+                  <span class="ip-card-address">${escH(ip.ip || "-")}</span>
+                </div>
+                <span class="threat-badge ${escH(rl)}">${escH(THREAT_LABELS[rl] || rl)}</span>
+              </div>
+              <div class="ip-card-body">
+                <div class="ip-card-row"><span class="ip-card-key">异常类型</span><span class="ip-card-val">${escH(anomalyType)}</span></div>
+                <div class="ip-card-row"><span class="ip-card-key">证据</span><span class="ip-card-val">${escH(evidence)}</span></div>
+                ${(ban.duration_days || banReason) ? `<div class="ip-card-row"><span class="ip-ban-chip">封禁建议：${ban.duration_days ? `封 ${ban.duration_days} 天` : ""}${banReason ? ` · ${escH(banReason)}` : ""}</span></div>` : ""}
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function renderOverviewMeta(rawData) {
+        const el = document.getElementById("overview-meta");
+        if (!el) return;
+        const summary = (rawData && rawData.summary) || {};
+        const items = [
+          { label: "总请求", value: summary.total_requests || 0 },
+          { label: "独立 IP", value: summary.unique_ips || 0 },
+          { label: "拦截次数", value: summary.blocked_count || 0 },
+          { label: "高危事件", value: summary.high_count || 0 },
+          { label: "暴力破解", value: summary.brute_force_count || 0 },
+          { label: "CVE 利用", value: summary.cve_count || 0 },
+        ];
+        el.innerHTML = items.map((item) => `
+          <div class="analysis-meta-item">
+            <span>${escH(item.label)}</span>
+            <strong>${Number(item.value).toLocaleString("zh-CN")}</strong>
+          </div>
+        `).join("");
+      }
+
+      function renderResult(display, meta = {}) {
+        currentDisplayData = display || {};
+        currentAnalysisTime = meta.analysis_time || currentAnalysisTime || "";
+        const threatLevel = display.threat_level || "medium";
+        const badge = document.getElementById("result-threat-badge");
+        if (badge) {
+          badge.className = `threat-badge ${threatLevel}`;
+          badge.textContent = THREAT_LABELS[threatLevel] || threatLevel;
+        }
+        document.getElementById("result-title").textContent = display.title || "AI 日志分析";
+        document.getElementById("result-overview-summary").textContent = display.overview_summary || "";
+        renderOverviewMeta(display.raw_analysis_data || {});
+        renderAnomalyIps(display.anomaly_ips || []);
+        renderFindingList("key-findings-list", display.key_findings || [], "");
+        renderFindingList("attack-patterns-list", display.attack_patterns || [], "warning");
+        renderFindingList("recommendations-list", display.recommendations || [], "success");
+        renderFindingList("security-notices-list", display.security_notices || [], "danger");
+        renderFindingList("risk-summary-list", display.risk_summary ? [display.risk_summary] : [], "warning");
+        renderFindingList("next-steps-list", display.next_steps || [], "");
+        const banCard = document.getElementById("ban-policy-card");
+        const banText = document.getElementById("ban-policy-text");
+        if (banCard && banText) {
+          if (display.ban_policy_advice) {
+            banCard.hidden = false;
+            banText.textContent = display.ban_policy_advice;
+          } else {
+            banCard.hidden = true;
+          }
+        }
+        document.getElementById("analysis-empty-state").hidden = true;
+        document.getElementById("analysis-error-state").hidden = true;
+        document.getElementById("analysis-result").hidden = false;
+        document.getElementById("export-btn").disabled = false;
+      }
+
+      function restoreCachedResult() {
+        const cached = readPageCache();
+        if (!cached || !cached.display) {
+          return false;
+        }
+        document.getElementById("last-analysis-time").textContent = fmtTime(cached.analysis_time);
+        renderResult(cached.display, cached);
+        startCountdown(cached.analysis_time);
+        return true;
+      }
+
+      async function runAnalysis() {
+        const triggerBtn = document.getElementById("trigger-analysis-btn");
+        const loading = document.getElementById("analysis-loading");
+        const errorEl = document.getElementById("analysis-error-state");
+        const statusEl = document.getElementById("loading-status");
+        if (triggerBtn) triggerBtn.disabled = true;
+        if (loading) loading.classList.add("active");
+        if (errorEl) errorEl.hidden = true;
+        if (statusEl) statusEl.textContent = "正在调用 AI 分析引擎…";
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), ANALYSIS_TIMEOUT_MS);
+          const res = await fetch("/api/agent/log-analysis", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
+            body: JSON.stringify({ hours: 24 }),
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
+          if (!res.ok) {
+            let errMsg = "分析请求失败";
+            try {
+              const errPayload = await res.json();
+              errMsg = errPayload.detail || errPayload.message || errMsg;
+            } catch (error) {}
+            throw new Error(`HTTP ${res.status}: ${errMsg}`);
+          }
+          const data = await res.json();
+          const payload = {
+            display: data.display || {},
+            analysis_time: data.analysis_time || new Date().toISOString(),
+            mode: data.mode || "ai",
+          };
+          writePageCache(payload);
+          document.getElementById("last-analysis-time").textContent = fmtTime(payload.analysis_time);
+          renderResult(payload.display, payload);
+          startCountdown(payload.analysis_time);
+        } catch (error) {
+          const errMsg = error.name === "AbortError" ? "请求超时，请稍后重试" : (error.message || "未知错误");
+          if (errorEl) {
+            errorEl.textContent = `AI 分析失败：${errMsg}`;
+            errorEl.hidden = false;
+          }
+          document.getElementById("analysis-empty-state").hidden = true;
+        } finally {
+          if (loading) loading.classList.remove("active");
+          if (triggerBtn) triggerBtn.disabled = false;
+          if (statusEl) statusEl.textContent = "";
+        }
+      }
+
+      async function exportReport() {
+        if (!currentDisplayData) return;
+        const exportBtn = document.getElementById("export-btn");
+        const originalText = exportBtn.textContent;
+        exportBtn.disabled = true;
+        exportBtn.textContent = "生成中…";
+        try {
+          const res = await fetch("/api/log-analysis/export", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
+            body: JSON.stringify({
+              display: currentDisplayData,
+              analysis_time: currentAnalysisTime || new Date().toISOString(),
+            }),
+          });
+          if (!res.ok) throw new Error("导出失败");
+          const blob = await res.blob();
+          const cd = res.headers.get("content-disposition") || "";
+          const match = cd.match(/filename=\"([^\"]+)\"/);
+          const filename = match ? match[1] : "log_analysis.docx";
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 3000);
+        } catch (error) {
+          alert(`导出失败：${error.message}`);
+        } finally {
+          exportBtn.disabled = false;
+          exportBtn.textContent = originalText;
+        }
+      }
+
+      function startCountdown(lastRunAt) {
+        if (countdownTimer) clearInterval(countdownTimer);
+        const countEl = document.getElementById("next-analysis-countdown");
+        if (!lastRunAt || !countEl) return;
+        const nextRunAt = new Date(lastRunAt).getTime() + EIGHT_HOURS_MS;
+        const update = () => {
+          const diff = nextRunAt - Date.now();
+          if (diff <= 0) {
+            clearInterval(countdownTimer);
+            countEl.textContent = "即将自动分析";
+            runAnalysis();
+            return;
+          }
+          const hours = Math.floor(diff / 3600000);
+          const minutes = Math.floor((diff % 3600000) / 60000);
+          const seconds = Math.floor((diff % 60000) / 1000);
+          countEl.textContent = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")} 后自动分析`;
+        };
+        update();
+        countdownTimer = setInterval(update, 1000);
+      }
+
+      async function checkAgentStatus() {
+        const indicator = document.getElementById("agent-status-indicator");
+        if (!indicator) return;
+        try {
+          const res = await fetch("/api/agent/status", { credentials: "same-origin" });
+          const data = await res.json();
+          if (data.status === "online") {
+            indicator.className = "agent-status-indicator online";
+            indicator.title = "Agent 在线";
+          } else {
+            indicator.className = "agent-status-indicator offline";
+            indicator.title = "Agent 离线";
+          }
+        } catch (error) {
+          indicator.className = "agent-status-indicator offline";
+          indicator.title = "Agent 离线或连接超时";
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const logoutBtn = document.getElementById("logout-button");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", async () => {
+            await fetch("/api/logout", { method: "POST", credentials: "same-origin" });
+            window.location.href = "/login";
+          });
+        }
+        fetch("/api/runtime", { credentials: "same-origin" })
+          .then((r) => r.json())
+          .then((payload) => {
+            const userEl = document.getElementById("runtime-user");
+            if (userEl) userEl.textContent = payload.username || "admin";
+          })
+          .catch(() => {});
+
+        document.getElementById("trigger-analysis-btn").addEventListener("click", runAnalysis);
+        document.getElementById("export-btn").addEventListener("click", exportReport);
+
+        const restored = restoreCachedResult();
+        if (!restored) {
+          document.getElementById("next-analysis-countdown").textContent = "点击立即分析后开始计时";
+        }
+
+        checkAgentStatus();
+        setInterval(checkAgentStatus, 30000);
+      });
+    </script>
+  </body>
+</html>

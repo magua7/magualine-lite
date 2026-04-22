@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ app_name }} - 数据筛选</title>
+    <link rel="stylesheet" href="../static/styles.css" />
+  </head>
+  <body class="dashboard-page" data-page="insights">
+    <header class="topbar">
+      <div>
+        <span class="eyebrow">MAGUALINE</span>
+        <h1>数据筛选 &amp; 重点关注</h1>
+      </div>
+      <div class="topbar-actions">
+        <div class="auto-refresh-widget" data-auto-refresh-widget data-refresh-seconds="300" title="页面将每 5 分钟自动刷新一次">
+          <span class="auto-refresh-widget__label">刷新倒计时</span>
+          <strong class="auto-refresh-widget__time">05:00</strong>
+        </div>
+        <nav class="nav-tabs">
+          <a href="/dashboard" class="nav-tab {% if active_page == 'dashboard' %}active{% endif %}">仪表盘</a>
+          <a href="/screen" class="nav-tab {% if active_page == 'screen' %}active{% endif %}">态势大屏</a>
+          <a href="/logs" class="nav-tab {% if active_page == 'logs' %}active{% endif %}">日志中心</a>
+          <a href="/insights" class="nav-tab {% if active_page == 'insights' %}active{% endif %}">数据筛选</a>
+        </nav>
+        <span id="runtime-user" class="muted-text">admin</span>
+        <button id="logout-button" class="ghost-button" type="button">退出登录</button>
+      </div>
+    </header>
+
+    <main class="dashboard-shell">
+
+      <!-- 时间窗口筛选 + 摘要 -->
+      <section class="insights-header-row">
+        <div class="insights-summary-cards">
+          <article class="insights-kpi-card danger">
+            <span>高频攻击源 IP</span>
+            <strong id="ins-kpi-attacking-ips">0</strong>
+            <p>拦截过的独立来源</p>
+          </article>
+          <article class="insights-kpi-card">
+            <span>窗口内拦截总数</span>
+            <strong id="ins-kpi-total-blocked">0</strong>
+            <p>命中拦截规则的请求</p>
+          </article>
+          <article class="insights-kpi-card warning">
+            <span>待处置高危告警</span>
+            <strong id="ins-kpi-pending-high">0</strong>
+            <p>严重等级未处置事件</p>
+          </article>
+          <article class="insights-kpi-card accent">
+            <span>暴力破解事件</span>
+            <strong id="ins-kpi-bruteforce">0</strong>
+            <p>登录接口爆破尝试</p>
+          </article>
+          <article class="insights-kpi-card">
+            <span>扫描探测事件</span>
+            <strong id="ins-kpi-scanner">0</strong>
+            <p>主动探测与路径扫描</p>
+          </article>
+          <article class="insights-kpi-card accent">
+            <span>CVE 利用事件</span>
+            <strong id="ins-kpi-cve">0</strong>
+            <p>已识别漏洞编号的利用</p>
+          </article>
+        </div>
+
+        <div class="insights-filter-block">
+          <span class="insights-filter-label">时间窗口</span>
+          <div class="insights-window-tabs">
+            <button class="insights-window-btn active" type="button" data-hours="6">6 小时</button>
+            <button class="insights-window-btn" type="button" data-hours="24">24 小时</button>
+            <button class="insights-window-btn" type="button" data-hours="72">72 小时</button>
+            <button class="insights-window-btn" type="button" data-hours="168">7 天</button>
+          </div>
+          <p class="insights-filter-hint">筛选所有下方数据的统计时间范围</p>
+        </div>
+      </section>
+
+      <!-- 重点关注：频繁攻击 IP -->
+      <section class="insights-section-title">
+        <div>
+          <h2>🔴 重点关注：高频攻击源 IP</h2>
+          <span class="panel-subtitle">按拦截次数排序，标注位置与 ISP，已封禁 IP 将高亮</span>
+        </div>
+      </section>
+
+      <section class="insights-ip-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>频繁攻击 IP 排行</h2>
+              <span class="panel-subtitle">拦截次数最多的来源地址</span>
+            </div>
+          </div>
+          <div id="ins-attacking-ips" class="ins-ip-list"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>高危事件 IP</h2>
+              <span class="panel-subtitle">触发高危告警最多的来源</span>
+            </div>
+          </div>
+          <div id="ins-high-severity-ips" class="ins-ip-list"></div>
+        </article>
+      </section>
+
+      <!-- 攻击模式分析 -->
+      <section class="insights-section-title">
+        <div>
+          <h2>⚡ 攻击模式分析</h2>
+          <span class="panel-subtitle">各攻击类型的命中量、高危占比与待处置数量</span>
+        </div>
+      </section>
+
+      <section class="content-grid-triple">
+        <article class="panel">
+          <div class="panel-header">
+            <h2>攻击类型分布</h2>
+            <span class="panel-subtitle">命中次数与严重程度</span>
+          </div>
+          <div id="ins-attack-breakdown" class="ins-attack-list"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <h2>暴力破解 IP</h2>
+            <span class="panel-subtitle">登录接口爆破尝试来源</span>
+          </div>
+          <div id="ins-bruteforce-ips" class="ins-ip-list"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <h2>扫描探测 IP</h2>
+            <span class="panel-subtitle">主动路径扫描与探测来源</span>
+          </div>
+          <div id="ins-scanner-ips" class="ins-ip-list"></div>
+        </article>
+      </section>
+
+      <!-- CVE 利用分析 -->
+      <section class="insights-section-title">
+        <div>
+          <h2>🛡 CVE 漏洞利用溯源</h2>
+          <span class="panel-subtitle">按 IP 和 CVE 编号归类的漏洞利用事件</span>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <h2>CVE 利用来源</h2>
+            <span class="panel-subtitle">IP + CVE 关联，命中次数排序</span>
+          </div>
+          <div id="ins-cve-sources" class="ins-cve-list"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <h2>高频被攻击路径</h2>
+            <span class="panel-subtitle">被拦截最多的请求目标路径</span>
+          </div>
+          <div id="ins-targeted-paths" class="ins-path-list"></div>
+        </article>
+      </section>
+
+      <!-- 待处置高危告警 -->
+      <section class="insights-section-title">
+        <div>
+          <h2>⚠️ 待处置高危告警</h2>
+          <span class="panel-subtitle">所有高危且尚未处置的事件，建议优先跟进</span>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel panel-wide">
+          <div class="panel-header">
+            <h2>高危待处置列表</h2>
+            <span class="panel-subtitle">点击源 IP 可快速跳转日志中心筛选该 IP</span>
+          </div>
+          <div id="ins-pending-alerts" class="ins-alert-list"></div>
+        </article>
+
+        <aside class="panel">
+          <div class="panel-header">
+            <h2>筛选说明</h2>
+          </div>
+          <div class="rank-list">
+            <div class="rank-item">
+              <div>
+                <strong>高频攻击 IP</strong>
+                <span class="muted-text">拦截请求数 ≥ 1 的所有来源，按封禁次数降序</span>
+              </div>
+            </div>
+            <div class="rank-item">
+              <div>
+                <strong>高危事件 IP</strong>
+                <span class="muted-text">触发了 SQL注入、WebShell、CVE利用等高危规则的来源</span>
+              </div>
+            </div>
+            <div class="rank-item">
+              <div>
+                <strong>暴力破解 IP</strong>
+                <span class="muted-text">针对登录接口短时大量失败的来源，建议立即封禁</span>
+              </div>
+            </div>
+            <div class="rank-item">
+              <div>
+                <strong>扫描探测 IP</strong>
+                <span class="muted-text">批量路径探测，可能是攻击前侦察，建议持续观察</span>
+              </div>
+            </div>
+            <div class="rank-item">
+              <div>
+                <strong>CVE 利用</strong>
+                <span class="muted-text">已匹配到特定 CVE 编号的漏洞利用请求，高优先级处置</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+    </main>
+
+    <script src="{{ url_for('static', path='/app.js') }}?v=20260409ui7" defer></script>
+  </body>
+</html>

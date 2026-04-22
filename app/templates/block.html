@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ app_name }} - 封禁 IP 管理</title>
+    <link rel="stylesheet" href="../static/styles.css" />
+  </head>
+  <body class="dashboard-page" data-page="block">
+    <header class="topbar">
+      <div>
+        <span class="eyebrow">MAGUALINE</span>
+        <h1>封禁 IP 管理</h1>
+      </div>
+      <div class="topbar-actions">
+        <div class="auto-refresh-widget" data-auto-refresh-widget data-refresh-seconds="300" title="页面将每 5 分钟自动刷新一次">
+          <span class="auto-refresh-widget__label">刷新倒计时</span>
+          <strong class="auto-refresh-widget__time">05:00</strong>
+        </div>
+        <nav class="nav-tabs">
+          <a href="/dashboard" class="nav-tab {% if active_page == 'dashboard' %}active{% endif %}">仪表盘</a>
+          <a href="/screen" class="nav-tab {% if active_page == 'screen' %}active{% endif %}">态势大屏</a>
+          <a href="/logs" class="nav-tab {% if active_page == 'logs' %}active{% endif %}">日志中心</a>
+          <a href="/block" class="nav-tab {% if active_page == 'block' %}active{% endif %}">封禁 IP</a>
+        </nav>
+        <span id="runtime-user" class="muted-text">admin</span>
+        <button id="logout-button" class="ghost-button" type="button">退出登录</button>
+      </div>
+    </header>
+
+    <main class="dashboard-shell">
+      <section class="metrics-grid">
+        <article class="metric-card">
+          <span class="metric-label">24h 总请求</span>
+          <strong id="metric-total">0</strong>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">24h 拦截次数</span>
+          <strong id="metric-blocked">0</strong>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">手动封禁</span>
+          <strong id="metric-block-manual">0</strong>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">自动封禁</span>
+          <strong id="metric-block-auto">0</strong>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">总封禁数量</span>
+          <strong id="metric-block-total">0</strong>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel panel-wide">
+          <div class="panel-header panel-header-wrap">
+            <div>
+              <h2>封禁控制台</h2>
+              <span class="panel-subtitle">同时查看手动封禁与自动封禁</span>
+            </div>
+            <form id="block-form" class="filter-row block-form">
+              <input id="block-ip" type="text" placeholder="例如 203.0.113.10" required />
+              <input id="block-reason" type="text" placeholder="例如 持续扫描、暴力破解或人工处置" />
+              <button class="primary-button" type="submit">加入手动封禁</button>
+            </form>
+          </div>
+
+          <div class="block-split-grid">
+            <section class="block-section">
+              <div class="panel-header">
+                <div>
+                  <h2>手动封禁列表</h2>
+                  <span class="panel-subtitle">由管理员手动加入，可随时解除</span>
+                </div>
+                <span id="manual-block-count" class="count-pill">0 条</span>
+              </div>
+              <div id="blocked-ips-manual" class="blocked-list"></div>
+              <div class="pagination-bar">
+                <div id="blocked-pagination-summary-manual" class="pagination-summary">暂无手动封禁</div>
+                <div id="blocked-pagination-manual" class="pagination-controls"></div>
+              </div>
+            </section>
+
+            <section class="block-section">
+              <div class="panel-header">
+                <div>
+                  <h2>自动封禁列表</h2>
+                  <span class="panel-subtitle">显示到期时间，也支持人工提前解除</span>
+                </div>
+                <span id="auto-block-count" class="count-pill">0 条</span>
+              </div>
+              <div id="blocked-ips-auto" class="blocked-list"></div>
+              <div class="pagination-bar">
+                <div id="blocked-pagination-summary-auto" class="pagination-summary">暂无自动封禁</div>
+                <div id="blocked-pagination-auto" class="pagination-controls"></div>
+              </div>
+            </section>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', path='/app.js') }}?v=20260409ui7" defer></script>
+  </body>
+</html>
