@@ -1,0 +1,25 @@
+# ===== 机密文件(严禁入库)=====
+.env
+.env.local
+*.pem
+*.key
+
+# ===== Python 产物 =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# ===== 运行时数据(数据库烙印在里面,本地保留,但不进 git)=====
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/screen_test_db/
+
+# ===== IDE / 系统 =====
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

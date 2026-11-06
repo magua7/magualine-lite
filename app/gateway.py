@@ -1,3 +1,12 @@
+# >> COPYRIGHT-BEGIN <<
+# ─────────────────────────────────────────────────────────────
+#  © 2026 MAGUALINE 初创团队 · MAGUALINE 威胁流量防护台
+#     项目:magualine-lite · 原始开发贡献者:包博文、孙敦龙、孙瑞晰、梁晨、段雅怡、刘羽纯、陈陆洋
+#     本软件为专有软件(闭源),© 2026 MAGUALINE 初创团队 保留所有权利。
+#     未经书面许可,不得分发、商用或移除本版权标记。
+#     许可详见:PROPRIETARY-LICENSE.md · 署名详见:NOTICE.md
+# ─────────────────────────────────────────────────────────────
+# << COPYRIGHT-END >>
 from __future__ import annotations
 
 import json
@@ -71,6 +80,18 @@ STATIC_PATH_EXTENSIONS = (
 settings = get_settings()
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, title="magualine-gateway")
 BRUTE_FORCE_THRESHOLD = 8
+
+# 版权署名响应头:所有经过本网关的响应(含 403 拦截页)均带出处标记
+# (单一来源:app/provenance.py,勿在此处手改)
+from .provenance import X_COPYRIGHT as _X_COPYRIGHT, X_PROTECTED_BY as _X_PROTECTED_BY  # noqa: E402
+
+
+@app.middleware("http")
+async def _provenance_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Protected-By"] = _X_PROTECTED_BY
+    response.headers["X-Copyright"] = _X_COPYRIGHT
+    return response
 
 
 def _parse_ip_value(value: str | None) -> str | None:
@@ -382,11 +403,13 @@ def blocked_response(reason: str, rule_name: str | None = None) -> HTMLResponse:
           <span class="tag">magualine</span>
           <h1>请求已被拦截</h1>
           <p>您的访问已违规，IP 已被管理员记录，请正确访问。</p>
+          <p style="margin-top:24px;font-size:12px;color:#94a3b8;letter-spacing:.04em;">{blocked_footer}</p>
         </div>
       </body>
     </html>
     """
-    return HTMLResponse(content=html, status_code=403)
+    from .provenance import COPYRIGHT_LINE as _BLOCK_FOOTER
+    return HTMLResponse(content=html.replace("{blocked_footer}", _BLOCK_FOOTER), status_code=403)
 
 
 @app.on_event("startup")

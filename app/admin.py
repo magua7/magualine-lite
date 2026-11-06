@@ -1,4 +1,13 @@
-﻿from __future__ import annotations
+# >> COPYRIGHT-BEGIN <<
+# ─────────────────────────────────────────────────────────────
+#  © 2026 MAGUALINE 初创团队 · MAGUALINE 威胁流量防护台
+#     项目:magualine-lite · 原始开发贡献者:包博文、孙敦龙、孙瑞晰、梁晨、段雅怡、刘羽纯、陈陆洋
+#     本软件为专有软件(闭源),© 2026 MAGUALINE 初创团队 保留所有权利。
+#     未经书面许可,不得分发、商用或移除本版权标记。
+#     许可详见:PROPRIETARY-LICENSE.md · 署名详见:NOTICE.md
+# ─────────────────────────────────────────────────────────────
+# << COPYRIGHT-END >>
+from __future__ import annotations
 
 import ast
 import io
@@ -49,6 +58,11 @@ from .storage import (
 settings = get_settings()
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+
+# 版权署名注入所有模板(单一来源:app/provenance.py,勿在此处手改)
+from .provenance import COPYRIGHT_LINE as _COPYRIGHT_LINE  # noqa: E402
+
+templates.env.globals["copyright_line"] = _COPYRIGHT_LINE
 
 DISPOSITION_DISPLAY_LABELS = {
     "real_attack": "真实攻击行为",
@@ -138,6 +152,18 @@ ATTACK_TYPE_DISPLAY_LABELS = {
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, title="magualine-admin")
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key, same_site="lax")
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+
+# 版权署名响应头(单一来源:app/provenance.py,勿在此处手改)
+from fastapi import Request as _ProvenanceRequest  # noqa: E402
+from .provenance import X_COPYRIGHT as _X_COPYRIGHT, X_PROTECTED_BY as _X_PROTECTED_BY  # noqa: E402
+
+
+@app.middleware("http")
+async def _provenance_headers(request: _ProvenanceRequest, call_next):
+    response = await call_next(request)
+    response.headers["X-Protected-By"] = _X_PROTECTED_BY
+    response.headers["X-Copyright"] = _X_COPYRIGHT
+    return response
 
 LOG_ANALYSIS_SECTION_KEYS = (
     "title",

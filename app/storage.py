@@ -1,3 +1,12 @@
+# >> COPYRIGHT-BEGIN <<
+# ─────────────────────────────────────────────────────────────
+#  © 2026 MAGUALINE 初创团队 · MAGUALINE 威胁流量防护台
+#     项目:magualine-lite · 原始开发贡献者:包博文、孙敦龙、孙瑞晰、梁晨、段雅怡、刘羽纯、陈陆洋
+#     本软件为专有软件(闭源),© 2026 MAGUALINE 初创团队 保留所有权利。
+#     未经书面许可,不得分发、商用或移除本版权标记。
+#     许可详见:PROPRIETARY-LICENSE.md · 署名详见:NOTICE.md
+# ─────────────────────────────────────────────────────────────
+# << COPYRIGHT-END >>
 from __future__ import annotations
 
 import json
@@ -16,6 +25,7 @@ from pathlib import Path
 from .config import get_settings
 from .detection import get_rule_metadata_index
 from .ip_geo import classify_special_ip, lookup_ip_geo, should_cache_geo_result
+from .provenance import stamp_database
 
 logger = logging.getLogger(__name__)
 
@@ -1866,6 +1876,8 @@ def init_db() -> None:
             """
         )
         connection.execute("DELETE FROM cc_bans WHERE expires_at <= ?", (utcnow_iso(),))
+        # 版权烙印:建库/启动时写入 _provenance 表(单一来源 app/provenance.py)
+        stamp_database(connection)
         connection.commit()
 
 
